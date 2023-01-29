@@ -75,12 +75,12 @@ impl<'a> Semver<'a> {
             self.patch as isize - other.patch as isize,
         ) {
             (0, 0, 0) => Compare::Eq,
-            (a, _, _) if a > 1 => Compare::Gt,
-            (a, _, _) if a < 1 => Compare::Lt,
-            (_, b, _) if b > 1 => Compare::Gt,
-            (_, b, _) if b < 1 => Compare::Lt,
-            (_, _, c) if c > 1 => Compare::Gt,
-            (_, _, c) if c < 1 => Compare::Lt,
+            (a, _, _) if a > 0 => Compare::Gt,
+            (a, _, _) if a < 0 => Compare::Lt,
+            (_, b, _) if b > 0 => Compare::Gt,
+            (_, b, _) if b < 0 => Compare::Lt,
+            (_, _, c) if c > 0 => Compare::Gt,
+            (_, _, c) if c < 0 => Compare::Lt,
             _ => unreachable!("invalid comparison"),
         }
     }
