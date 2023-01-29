@@ -4,4 +4,4 @@ default:
 
 # Generate coverage/lcov.info
 coverage:
-  cargo tarpaulin -o lcov --output-dir coverage
+  cargo tarpaulin -o lcov --output-dir coverage --coveralls $COVERALLS_TOKEN

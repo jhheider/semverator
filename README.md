@@ -1,3 +1,8 @@
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/jhheider/semverator)
+[![Test with Code Coverage](https://github.com/jhheider/semverator/actions/workflows/test.yml/badge.svg)](https://github.com/jhheider/semverator/actions/workflows/test.yml)
+[![Check and Lint](https://github.com/jhheider/semverator/actions/workflows/check-and-lint.yaml/badge.svg)](https://github.com/jhheider/semverator/actions/workflows/check-and-lint.yaml)
+[![Coverage Status](https://coveralls.io/repos/github/jhheider/semverator/badge.svg?branch=main)](https://coveralls.io/github/jhheider/semverator?branch=main)
+
 # semverator
 
 Pure rust implementation of [teaxyz/cli:semver.ts](https://github.com/teaxyz/cli/blob/main/src/utils/semver.ts) for command-line usage.
