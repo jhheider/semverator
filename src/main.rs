@@ -1,78 +1,18 @@
 extern crate clap;
 
+mod args;
 mod range;
 mod semver;
 #[cfg(test)]
 mod tests;
 
-use anyhow::{bail, Context, Result};
-use clap::{arg, command, ArgAction, ArgMatches, Command};
+use anyhow::{bail, Result};
+use args::{get_arg, get_arg_vec};
 use range::Range;
 use semver::Semver;
 
 fn main() -> Result<()> {
-    let matches = command!()
-        .subcommand_required(true)
-        .arg_required_else_help(true)
-        // Semver::validate
-        .subcommand(
-            Command::new("validate")
-                .about("validates a version")
-                .arg(arg!([semver] "the version to validate").value_parser(Semver::parse)),
-        )
-        // Semver::eq
-        .subcommand(
-            Command::new("eq")
-                .about("checks if two versions are equal")
-                .arg(arg!([left] "the first version to compare").value_parser(Semver::parse))
-                .arg(arg!([right] "the second version to compare").value_parser(Semver::parse)),
-        )
-        // Semver::neq
-        .subcommand(
-            Command::new("neq")
-                .about("checks if two versions are not equal")
-                .arg(arg!([left] "the first version to compare").value_parser(Semver::parse))
-                .arg(arg!([right] "the second version to compare").value_parser(Semver::parse)),
-        )
-        // Semver::gt
-        .subcommand(
-            Command::new("gt")
-                .about("checks if left > right")
-                .arg(arg!([left] "the first version to compare").value_parser(Semver::parse))
-                .arg(arg!([right] "the second version to compare").value_parser(Semver::parse)),
-        )
-        // Semver::lt
-        .subcommand(
-            Command::new("lt")
-                .about("checks if left < right")
-                .arg(arg!([left] "the first version to compare").value_parser(Semver::parse))
-                .arg(arg!([right] "the second version to compare").value_parser(Semver::parse)),
-        )
-        // Range::validate-range
-        .subcommand(
-            Command::new("validate-range")
-                .about("validates a range")
-                .arg(arg!([range] "the range to validate").value_parser(Range::parse)),
-        )
-        // Range::satisfies
-        .subcommand(
-            Command::new("satisfies")
-                .about("validates a range satisfies a semver")
-                .arg(arg!([range] "the range to validate").value_parser(Range::parse))
-                .arg(arg!([semver] "the semver to test").value_parser(Semver::parse)),
-        )
-        // Range::max
-        .subcommand(
-            Command::new("max")
-                .about("maximum version that satisifies a range")
-                .arg(arg!([range] "the range to validate").value_parser(Range::parse))
-                .arg(
-                    arg!([semver] "the semvers to test")
-                        .value_parser(Semver::parse)
-                        .action(ArgAction::Append),
-                ),
-        )
-        .get_matches();
+    let matches = args::setup();
 
     match matches.subcommand() {
         // Semver::validate
@@ -156,11 +96,7 @@ fn main() -> Result<()> {
         // Range::max
         Some(("max", args)) => {
             let range = get_arg::<Range>(args, "range")?;
-            let semvers = args
-                .get_many::<Semver>("semver")
-                .context("no [semvers] were passed")?
-                .cloned()
-                .collect::<Vec<Semver>>();
+            let semvers = get_arg_vec::<Semver>(args, "semver")?;
             match range.max(&semvers) {
                 Some(semver) => {
                     println!("{}", semver.raw);
@@ -170,20 +106,7 @@ fn main() -> Result<()> {
             }
         }
 
-        Some((&_, _)) => todo!("what is this?"),
+        Some((cmd, _)) => unimplemented!("{cmd} isn't implemented"),
         None => bail!("no command supplied"),
     }
-}
-
-pub trait Parseable<'a>: Sized {
-    fn parse(input: &'a str) -> Result<Self>;
-}
-
-fn get_arg<'a, T>(args: &'a ArgMatches, key: &'a str) -> Result<T>
-where
-    T: Clone + Send + Sync + 'static,
-{
-    args.get_one::<T>(key)
-        .context(format!("{key} is missing"))
-        .cloned()
 }
