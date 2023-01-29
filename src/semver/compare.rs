@@ -14,20 +14,19 @@ impl<'a> Semver<'a> {
     }
 
     fn compare(&self, other: &Semver) -> Compare {
-        match (
-            self.major as isize - other.major as isize,
-            self.minor as isize - other.minor as isize,
-            self.patch as isize - other.patch as isize,
-        ) {
-            (0, 0, 0) => Compare::Eq,
-            (a, _, _) if a > 0 => Compare::Gt,
-            (a, _, _) if a < 0 => Compare::Lt,
-            (_, b, _) if b > 0 => Compare::Gt,
-            (_, b, _) if b < 0 => Compare::Lt,
-            (_, _, c) if c > 0 => Compare::Gt,
-            (_, _, c) if c < 0 => Compare::Lt,
-            _ => unreachable!("invalid comparison"),
+        let len = self.components.len().max(other.components.len());
+        for x in 0..len {
+            let a = self.components.get(x);
+            let b = other.components.get(x);
+            match (a, b) {
+                (None, _) => return Compare::Lt,
+                (_, None) => return Compare::Gt,
+                (Some(a), Some(b)) if a > b => return Compare::Gt,
+                (Some(a), Some(b)) if a < b => return Compare::Lt,
+                _ => continue,
+            }
         }
+        Compare::Eq
     }
 }
 

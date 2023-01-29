@@ -35,7 +35,7 @@ Options:
 ## TODO
 
 - [x] validate semver
-- [ ] include letter-extend versions (openssl-1.1.1s)
+- [x] include letter-extend versions (openssl-1.1.1s)
 - [x] semver comparisons
 - [x] constraint ranges
 - [x] range intersections

@@ -3,7 +3,6 @@ mod parse;
 
 #[derive(Default, Debug, Clone, Hash)]
 pub struct Semver<'a> {
-    // todo!()
     pub components: Vec<usize>,
 
     pub major: usize,
