@@ -39,4 +39,4 @@ Options:
 - [x] semver comparisons
 - [x] constraint ranges
 - [x] range intersections
-- [ ] 90+% test coverage
+- [x] 90+% test coverage

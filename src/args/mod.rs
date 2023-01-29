@@ -2,7 +2,7 @@ use crate::{range::Range, semver::Semver};
 use anyhow::{Context, Result};
 use clap::{arg, command, ArgAction, ArgMatches, Command};
 
-pub fn setup() -> ArgMatches {
+pub fn setup() -> Command {
     command!()
         .subcommand_required(true)
         .arg_required_else_help(true)
@@ -71,9 +71,9 @@ pub fn setup() -> ArgMatches {
                 .arg(arg!([left] "the first range to intersect").value_parser(Range::parse))
                 .arg(arg!([right] "the second range to intersect").value_parser(Range::parse)),
         )
-        .get_matches()
 }
 
+#[cfg(not(tarpaulin_include))]
 pub fn get_arg<'a, T>(args: &'a ArgMatches, key: &'a str) -> Result<T>
 where
     T: Clone + Send + Sync + 'static,
@@ -83,6 +83,7 @@ where
         .cloned()
 }
 
+#[cfg(not(tarpaulin_include))]
 pub fn get_arg_vec<'a, T>(args: &'a ArgMatches, key: &'a str) -> Result<Vec<T>>
 where
     T: Clone + Send + Sync + 'static,

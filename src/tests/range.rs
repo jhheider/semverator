@@ -136,5 +136,29 @@ fn test_interset() -> Result<()> {
     assert!(ig.is_ok());
     assert_eq!(ig?.raw, ">=11.3<12,>=12.2<13");
 
+    let rk = Range::parse("*")?;
+
+    let ih = rk.intersect(&ra);
+    assert!(ih.is_ok());
+    assert_eq!(ih?.raw, ra.raw);
+
+    let ii = ra.intersect(&rk);
+    assert!(ii.is_ok());
+    assert_eq!(ii?.raw, ra.raw);
+
+    let rl = Range::parse("=3.8")?;
+    let rm = Range::parse("=3.9")?;
+
+    let ij = rg.intersect(&rl);
+    let ik = rg.intersect(&rm);
+
+    assert!(ij.is_ok());
+    assert!(ik.is_err());
+    assert_eq!(ij?.raw, rl.raw);
+
+    let il = rg.intersect(&ra);
+    assert!(il.is_ok());
+    assert_eq!(il?.raw, rg.raw);
+
     Ok(())
 }

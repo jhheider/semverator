@@ -8,13 +8,21 @@ mod tests;
 
 use anyhow::{bail, Result};
 use args::{get_arg, get_arg_vec};
+use clap::ArgMatches;
 use range::Range;
 use semver::Semver;
 
 fn main() -> Result<()> {
-    let matches = args::setup();
+    let args = args::setup().get_matches();
 
-    match matches.subcommand() {
+    handle_command(args.subcommand())
+}
+
+// `clap` tested for correctness
+// TODO: factor out as much as possible for testing
+#[cfg(not(tarpaulin_include))]
+fn handle_command(matches: Option<(&str, &ArgMatches)>) -> Result<()> {
+    match matches {
         // Semver::validate
         Some(("validate", args)) => {
             let semver = get_arg::<Semver>(args, "semver")?;
