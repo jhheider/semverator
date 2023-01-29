@@ -1,10 +1,6 @@
 use super::Semver;
 
 impl<'a> Semver<'a> {
-    pub fn eq(&self, other: &Semver) -> bool {
-        self.compare(other) == Compare::Eq
-    }
-
     pub fn neq(&self, other: &Semver) -> bool {
         self.compare(other) != Compare::Eq
     }
@@ -32,6 +28,12 @@ impl<'a> Semver<'a> {
             (_, _, c) if c < 0 => Compare::Lt,
             _ => unreachable!("invalid comparison"),
         }
+    }
+}
+
+impl<'a> PartialEq for Semver<'a> {
+    fn eq(&self, other: &Semver) -> bool {
+        self.compare(other) == Compare::Eq
     }
 }
 

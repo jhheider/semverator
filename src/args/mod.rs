@@ -64,6 +64,13 @@ pub fn setup() -> ArgMatches {
                         .action(ArgAction::Append),
                 ),
         )
+        // Range::intersect
+        .subcommand(
+            Command::new("intersect")
+                .about("intersection between two ranges")
+                .arg(arg!([left] "the first range to intersect").value_parser(Range::parse))
+                .arg(arg!([right] "the second range to intersect").value_parser(Range::parse)),
+        )
         .get_matches()
 }
 

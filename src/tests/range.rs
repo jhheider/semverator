@@ -9,7 +9,7 @@ fn test_parse() -> Result<()> {
     let c = Range::parse("~16");
     let d = Range::parse("=16");
     let e = Range::parse("<16");
-    let f = Range::parse(">=11<15||^16||~16||=16||<16");
+    let f = Range::parse(">=11<15||^16.5||~16||=16||<16");
     let g = Range::parse("*");
     let h = Range::parse(">=15<12");
     let i = Range::parse("<=11>15");
@@ -86,6 +86,55 @@ fn test_max() -> Result<()> {
     assert_eq!(ra.max(&sa).unwrap().raw, "17.8");
     assert_eq!(rb.max(&sa).unwrap().raw, "14.5");
     assert_eq!(rc.max(&sa).unwrap().raw, "16.8");
+
+    Ok(())
+}
+
+#[test]
+fn test_interset() -> Result<()> {
+    let ra = Range::parse("^3.7")?;
+    let rb = Range::parse("=3.11")?;
+
+    let ia = ra.intersect(&rb);
+    assert!(ia.is_ok());
+    assert_eq!(ia?.raw, rb.raw);
+
+    let rc = Range::parse("^3.9")?;
+
+    let ib = ra.intersect(&rc);
+    assert!(ib.is_ok());
+    assert_eq!(ib?.raw, ">=3.9<4");
+
+    let rd = Range::parse("*")?;
+
+    let ic = ra.intersect(&rd);
+    assert!(ic.is_ok());
+    assert_eq!(ic?.raw, "^3.7");
+
+    let re = Range::parse("~3.7")?;
+    let rf = Range::parse("~3.8")?;
+
+    let id = re.intersect(&rf);
+    assert!(id.is_err());
+
+    let rg = Range::parse("=3.8")?;
+
+    let ie = ra.intersect(&rg);
+    assert!(ie.is_ok());
+    assert_eq!(ie?.raw, rg.raw);
+
+    let rh = Range::parse("^11,^12")?;
+    let ri = Range::parse("^11.3")?;
+
+    let r#if = rh.intersect(&ri);
+    assert!(r#if.is_ok());
+    assert_eq!(r#if?.raw, ">=11.3<12");
+
+    let rj = Range::parse("^11.3,^12.2")?;
+
+    let ig = rh.intersect(&rj);
+    assert!(ig.is_ok());
+    assert_eq!(ig?.raw, ">=11.3<12||>=12.2<13");
 
     Ok(())
 }

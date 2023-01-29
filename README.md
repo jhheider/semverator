@@ -8,5 +8,5 @@ Pure rust implementation of [teaxyz/cli:semver.ts](https://github.com/teaxyz/cli
 - [ ] include letter-extend versions (openssl-1.1.1s)
 - [x] semver comparisons
 - [x] constraint ranges
-- [ ] range intersections
+- [x] range intersections
 - [ ] 90+% test coverage
