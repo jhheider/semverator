@@ -1,47 +1,53 @@
 use anyhow::{Context, Result};
 
-use crate::Parseable;
 // use regex::Regex;
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct Semver<'a> {
     // todo!()
-    _components: Vec<usize>,
+    pub components: Vec<usize>,
 
-    major: usize,
-    minor: usize,
+    pub major: usize,
+    pub minor: usize,
     patch: usize,
 
     // todo!()
     _prerelease: Vec<&'a str>,
     _build: Vec<&'a str>,
 
-    pub raw: &'a str,
+    pub raw: String,
 }
 
-impl<'a> Parseable<'a> for Semver<'a> {
-    fn parse(semver: &'a str) -> Result<Self> {
+impl<'a> Semver<'a> {
+    pub fn parse(semver: &str) -> Result<Self> {
         // let re = Regex::new(r"\d+[a-z]?")?;
-        let raw = semver;
-        let mut parts = semver.split('.');
+        let raw = semver.to_string();
+        let mut components = Vec::new();
+        let mut parts = raw.split('.');
         let major = parts
             .next()
             .context("string is too short")?
             .trim_start_matches('v')
             .parse()
             .context("major is not a digit")?;
-        let minor = parts
-            .next()
-            .unwrap_or("0")
-            .parse()
-            .context("minor is not a digit")?;
-        let patch = parts
-            .next()
-            .unwrap_or("0")
-            .parse()
-            .context("patch is not a digit")?;
+        components.push(major);
+        let minor = if let Some(p) = parts.next() {
+            let v = p.parse().context("minor is not a digit")?;
+            components.push(v);
+            v
+        } else {
+            0
+        };
+        let patch = if let Some(p) = parts.next() {
+            let v = p.parse().context("patch is not a digit")?;
+            components.push(v);
+            v
+        } else {
+            0
+        };
 
         Ok(Self {
+            components,
             major,
             minor,
             patch,
@@ -49,9 +55,7 @@ impl<'a> Parseable<'a> for Semver<'a> {
             ..Default::default()
         })
     }
-}
 
-impl<'a> Semver<'a> {
     pub fn eq(&self, other: &Semver) -> bool {
         self.compare(other) == Compare::Eq
     }
@@ -82,6 +86,16 @@ impl<'a> Semver<'a> {
             (_, _, c) if c > 0 => Compare::Gt,
             (_, _, c) if c < 0 => Compare::Lt,
             _ => unreachable!("invalid comparison"),
+        }
+    }
+
+    pub fn infinty() -> Self {
+        Self {
+            major: usize::MAX,
+            minor: usize::MAX,
+            patch: usize::MAX,
+            raw: "Infinity.Infinity.Infinty".to_string(),
+            ..Default::default()
         }
     }
 }
