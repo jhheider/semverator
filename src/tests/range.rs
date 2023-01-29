@@ -134,7 +134,7 @@ fn test_interset() -> Result<()> {
 
     let ig = rh.intersect(&rj);
     assert!(ig.is_ok());
-    assert_eq!(ig?.raw, ">=11.3<12||>=12.2<13");
+    assert_eq!(ig?.raw, ">=11.3<12,>=12.2<13");
 
     Ok(())
 }

@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use super::{Constraint, Range};
 use anyhow::{bail, Result};
 
@@ -8,7 +6,7 @@ impl<'a> Range<'a> {
         let a = self;
         let b = range;
 
-        let mut set = HashSet::<Constraint>::new();
+        let mut set = Vec::<Constraint>::new();
 
         for aa in a.set.iter() {
             for bb in b.set.iter() {
@@ -17,24 +15,24 @@ impl<'a> Range<'a> {
                     (_, Constraint::Any) => return Range::parse(&a.raw),
                     (Constraint::Single(aaa), Constraint::Single(bbb)) => {
                         if aaa.eq(bbb) {
-                            set.insert(aa.clone());
+                            set.push(aa.clone());
                         }
                     }
                     (Constraint::Single(aaa), Constraint::Contiguous(_, _)) => {
                         if bb.satisfies(aaa) {
-                            set.insert(aa.clone());
+                            set.push(aa.clone());
                         }
                     }
                     (Constraint::Contiguous(_, _), Constraint::Single(bbb)) => {
                         if aa.satisfies(bbb) {
-                            set.insert(bb.clone());
+                            set.push(bb.clone());
                         }
                     }
                     (Constraint::Contiguous(a1, a2), Constraint::Contiguous(b1, b2)) => {
                         if a1.lt(b2) && b1.lt(a2) {
                             let v1 = if a1.gt(b1) { a1 } else { b1 };
                             let v2 = if a2.lt(b2) { a2 } else { b2 };
-                            set.insert(Constraint::Contiguous(v1.clone(), v2.clone()));
+                            set.push(Constraint::Contiguous(v1.clone(), v2.clone()));
                         }
                     }
                 }
