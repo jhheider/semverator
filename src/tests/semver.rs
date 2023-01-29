@@ -57,3 +57,10 @@ fn test_compare() -> Result<()> {
 
     Ok(())
 }
+#[test]
+fn test_infinty() {
+    let inf = Semver::infinty();
+
+    assert_eq!(inf.components, [usize::MAX, usize::MAX, usize::MAX]);
+    assert_eq!(inf.raw, "Infinity.Infinity.Infinity");
+}

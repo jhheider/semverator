@@ -19,10 +19,11 @@ pub struct Semver<'a> {
 impl<'a> Semver<'a> {
     pub fn infinty() -> Self {
         Self {
+            components: vec![usize::MAX, usize::MAX, usize::MAX],
             major: usize::MAX,
             minor: usize::MAX,
             patch: usize::MAX,
-            raw: "Infinity.Infinity.Infinty".to_string(),
+            raw: "Infinity.Infinity.Infinity".to_string(),
             ..Default::default()
         }
     }

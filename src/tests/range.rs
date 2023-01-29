@@ -14,6 +14,8 @@ fn test_parse() -> Result<()> {
     let h = Range::parse(">=15<12");
     let i = Range::parse("<=11>15");
     let j = Range::parse("Your mom");
+    let k = Range::parse("");
+    let l = Range::parse(">=12");
 
     assert!(a.is_ok());
     assert!(b.is_ok());
@@ -25,8 +27,19 @@ fn test_parse() -> Result<()> {
     assert!(h.is_err());
     assert!(i.is_err());
     assert!(j.is_err());
+    assert!(k.is_err());
+    assert!(l.is_ok());
 
     assert_eq!(f?.set.len(), 5);
+
+    Ok(())
+}
+
+#[test]
+fn test_raw() -> Result<()> {
+    let ra = Range::parse("*")?;
+
+    assert_eq!(ra.raw(), "*");
 
     Ok(())
 }
@@ -69,6 +82,7 @@ fn test_max() -> Result<()> {
     let ra = Range::parse("*")?;
     let rb = Range::parse(">=11<15")?;
     let rc = Range::parse("^16.5")?;
+    let rd = Range::parse("^3")?;
 
     let sa = vec![
         Semver::parse("10.5")?,
@@ -81,17 +95,18 @@ fn test_max() -> Result<()> {
         Semver::parse("16.5")?,
         Semver::parse("16.8")?,
         Semver::parse("17.8")?,
+        Semver::parse("4.8")?,
     ];
 
     assert_eq!(ra.max(&sa).unwrap().raw, "17.8");
     assert_eq!(rb.max(&sa).unwrap().raw, "14.5");
     assert_eq!(rc.max(&sa).unwrap().raw, "16.8");
-
+    assert!(rd.max(&sa).is_none());
     Ok(())
 }
 
 #[test]
-fn test_interset() -> Result<()> {
+fn test_intersect() -> Result<()> {
     let ra = Range::parse("^3.7")?;
     let rb = Range::parse("=3.11")?;
 

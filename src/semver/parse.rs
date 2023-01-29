@@ -12,17 +12,19 @@ impl<'a> Semver<'a> {
         for r in raw.split('.') {
             match re.captures(r) {
                 Some(caps) => {
-                    components.push(caps.get(1).context("regex failure")?.as_str().parse()?);
-                    components.push(
-                        caps.get(2)
-                            .context("regex failure")?
-                            .as_str()
-                            .chars()
-                            .next()
-                            .context("regex failure")? as usize
-                            - 'a' as usize
-                            + 1,
-                    );
+                    let digit = caps.get(1).context("regex failure")?.as_str().parse()?;
+                    components.push(digit);
+
+                    let letter = caps
+                        .get(2)
+                        .context("regex failure")?
+                        .as_str()
+                        .chars()
+                        .next()
+                        .context("regex failure")? as usize
+                        - 'a' as usize
+                        + 1;
+                    components.push(letter);
                 }
                 None => components.push(r.trim_start_matches('v').parse()?),
             }

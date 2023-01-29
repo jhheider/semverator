@@ -12,6 +12,7 @@ use clap::ArgMatches;
 use range::Range;
 use semver::Semver;
 
+#[cfg(not(tarpaulin_include))]
 fn main() -> Result<()> {
     let args = args::setup().get_matches();
 

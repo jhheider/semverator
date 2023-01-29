@@ -8,6 +8,11 @@ impl<'a> Range<'a> {
     pub fn parse(range: &str) -> Result<Self> {
         let raw = range.to_string();
         let mut set = Vec::new();
+
+        if range.is_empty() {
+            bail!("no constraints")
+        }
+
         if range == "*" {
             set.push(Constraint::Any);
             return Ok(Self { raw, set });
@@ -18,9 +23,6 @@ impl<'a> Range<'a> {
             .map(Constraint::parse)
             .collect::<Result<Vec<Constraint>>>()?;
 
-        if set.is_empty() {
-            bail!("no constraints")
-        }
         for c in set.iter() {
             if let Constraint::Contiguous(v1, v2) = c {
                 if !v1.lt(v2) {
@@ -71,8 +73,7 @@ impl<'a> Constraint<'a> {
                 "=" => Ok(Constraint::Single(Semver::parse(
                     cap.get(2).context("invalid description")?.as_str(),
                 )?)),
-
-                _ => bail!("invalid range description"),
+                _ => unreachable!("invalid range description"),
             };
         }
         bail!("invalid range description")
