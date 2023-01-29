@@ -1,6 +1,8 @@
 # https://github.com/BamPeers/rust-ci-github-actions-workflow
 
-on: release
+on:
+  release:
+    types: [published]
 
 name: Release Packaging
 
