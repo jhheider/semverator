@@ -2,6 +2,8 @@ extern crate clap;
 
 mod range;
 mod semver;
+#[cfg(test)]
+mod tests;
 
 use std::process::exit;
 
@@ -98,7 +100,10 @@ fn main() -> Result<()> {
         }
 
         Some((&_, _)) => todo!("what is this?"),
-        None => todo!("no valid command"),
+        None => {
+            println!("no command supplied");
+            exit(1)
+        }
     }
 }
 
