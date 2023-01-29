@@ -9,3 +9,4 @@ Pure rust implementation of [teaxyz/cli:semver.ts](https://github.com/teaxyz/cli
 - [x] semver comparisons
 - [ ] constraint ranges
 - [ ] range intersections
+- [ ] 90+% test coverage
