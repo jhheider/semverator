@@ -1,7 +1,14 @@
 [package]
 name = "semverator"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
+license = "Apache-2.0"
+readme = "README.md"
+description = "A command line tool for working with semantic versioning (tea.xyz implementation)"
+homepage = "https://github.com/jhheider/semverator"
+repository = "https://github.com/jhheider/semverator"
+keywords = ["semver", "semantic", "versioning", "tea.xyz"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1.0.68"
