@@ -5,10 +5,8 @@ mod semver;
 #[cfg(test)]
 mod tests;
 
-use std::process::exit;
-
-use anyhow::{Context, Result};
-use clap::{arg, command, ArgMatches, Command};
+use anyhow::{bail, Context, Result};
+use clap::{arg, command, ArgAction, ArgMatches, Command};
 use range::Range;
 use semver::Semver;
 
@@ -50,12 +48,29 @@ fn main() -> Result<()> {
                 .arg(arg!([left] "the first version to compare").value_parser(Semver::parse))
                 .arg(arg!([right] "the second version to compare").value_parser(Semver::parse)),
         )
-        // Range
-        // validate-range
+        // Range::validate-range
         .subcommand(
             Command::new("validate-range")
                 .about("validates a range")
                 .arg(arg!([range] "the range to validate").value_parser(Range::parse)),
+        )
+        // Range::satisfies
+        .subcommand(
+            Command::new("satisfies")
+                .about("validates a range satisfies a semver")
+                .arg(arg!([range] "the range to validate").value_parser(Range::parse))
+                .arg(arg!([semver] "the semver to test").value_parser(Semver::parse)),
+        )
+        // Range::max
+        .subcommand(
+            Command::new("max")
+                .about("maximum version that satisifies a range")
+                .arg(arg!([range] "the range to validate").value_parser(Range::parse))
+                .arg(
+                    arg!([semver] "the semvers to test")
+                        .value_parser(Semver::parse)
+                        .action(ArgAction::Append),
+                ),
         )
         .get_matches();
 
@@ -76,8 +91,7 @@ fn main() -> Result<()> {
                 println!("versions are equal");
                 Ok(())
             } else {
-                println!("versions are not equal");
-                exit(1);
+                bail!("versions are not equal");
             }
         }
 
@@ -90,8 +104,7 @@ fn main() -> Result<()> {
                 println!("versions are not equal");
                 Ok(())
             } else {
-                println!("versions are equal");
-                exit(1);
+                bail!("versions are equal");
             }
         }
 
@@ -104,8 +117,7 @@ fn main() -> Result<()> {
                 println!("{} is greater than {}", left.raw, right.raw);
                 Ok(())
             } else {
-                println!("{} is not greater than {}", left.raw, right.raw);
-                exit(1);
+                bail!("{} is not greater than {}", left.raw, right.raw);
             }
         }
 
@@ -118,8 +130,7 @@ fn main() -> Result<()> {
                 println!("{} is less than {}", left.raw, right.raw);
                 Ok(())
             } else {
-                println!("{} is not less than {}", left.raw, right.raw);
-                exit(1);
+                bail!("{} is not less than {}", left.raw, right.raw);
             }
         }
 
@@ -130,11 +141,37 @@ fn main() -> Result<()> {
             Ok(())
         }
 
-        Some((&_, _)) => todo!("what is this?"),
-        None => {
-            println!("no command supplied");
-            exit(1)
+        // Range::satisfies
+        Some(("satisfies", args)) => {
+            let range = get_arg::<Range>(args, "range")?;
+            let semver = get_arg::<Semver>(args, "semver")?;
+            if range.satisfies(&semver) {
+                println!("{} satisifes {}", semver.raw, range.raw);
+                Ok(())
+            } else {
+                bail!("{} doesn't satisify {}", semver.raw, range.raw);
+            }
         }
+
+        // Range::max
+        Some(("max", args)) => {
+            let range = get_arg::<Range>(args, "range")?;
+            let semvers = args
+                .get_many::<Semver>("semver")
+                .context("no [semvers] were passed")?
+                .cloned()
+                .collect::<Vec<Semver>>();
+            match range.max(&semvers) {
+                Some(semver) => {
+                    println!("{}", semver.raw);
+                    Ok(())
+                }
+                None => bail!("no viable candidates"),
+            }
+        }
+
+        Some((&_, _)) => todo!("what is this?"),
+        None => bail!("no command supplied"),
     }
 }
 
