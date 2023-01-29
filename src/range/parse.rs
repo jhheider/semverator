@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use crate::semver::Semver;
 
 use super::{Constraint, Range};
@@ -9,16 +7,16 @@ use regex::Regex;
 impl<'a> Range<'a> {
     pub fn parse(range: &str) -> Result<Self> {
         let raw = range.to_string();
-        let mut set = HashSet::new();
+        let mut set = Vec::new();
         if range == "*" {
-            set.insert(Constraint::Any);
+            set.push(Constraint::Any);
             return Ok(Self { raw, set });
         }
         let re = Regex::new(r"\s*(,|\|\|)\s*")?;
         set = re
             .split(range)
             .map(Constraint::parse)
-            .collect::<Result<HashSet<Constraint>>>()?;
+            .collect::<Result<Vec<Constraint>>>()?;
 
         if set.is_empty() {
             bail!("no constraints")

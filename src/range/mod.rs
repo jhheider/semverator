@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use crate::semver::Semver;
 
 mod intersect;
@@ -10,7 +8,7 @@ mod satisfies;
 #[derive(Debug, Clone)]
 pub struct Range<'a> {
     pub raw: String,
-    pub set: HashSet<Constraint<'a>>,
+    pub set: Vec<Constraint<'a>>,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq)]
