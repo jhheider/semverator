@@ -55,6 +55,8 @@ jobs:
           override: true
       - name: Setup just
         uses: extractions/setup-just@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Generate test result and coverage report
         run: |
           cargo install cargo-tarpaulin

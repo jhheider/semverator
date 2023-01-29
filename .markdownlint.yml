@@ -1,0 +1,10 @@
+# Badges generally go above the first heading, so
+# requiring the first line to be `/^#.*$/` messes
+# with that.
+MD041: false
+
+# Apache-2.0 license doesn't conform to markdown rules, unfortunately.
+MD034: false
+MD009: false
+MD012: false
+MD029: false
