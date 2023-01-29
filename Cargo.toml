@@ -7,7 +7,7 @@ readme = "README.md"
 description = "A command line tool for working with semantic versioning (tea.xyz implementation)"
 homepage = "https://github.com/jhheider/semverator"
 repository = "https://github.com/jhheider/semverator"
-keywords = ["semver", "semantic", "versioning", "tea.xyz"]
+keywords = ["semver", "semantic", "versioning", "teaxyz"]
 categories = ["command-line-utilities"]
 
 [dependencies]
