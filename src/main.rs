@@ -106,6 +106,16 @@ fn main() -> Result<()> {
             }
         }
 
+        // Range::intersect
+        Some(("intersect", args)) => {
+            let left = get_arg::<Range>(args, "left")?;
+            let right = get_arg::<Range>(args, "right")?;
+
+            let intersection = left.intersect(&right)?;
+            println!("{}", intersection.raw);
+            Ok(())
+        }
+
         Some((cmd, _)) => unimplemented!("{cmd} isn't implemented"),
         None => bail!("no command supplied"),
     }

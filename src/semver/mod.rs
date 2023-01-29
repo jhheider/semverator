@@ -1,7 +1,7 @@
 mod compare;
 mod parse;
 
-#[derive(Default, Debug, Clone)]
+#[derive(Default, Debug, Clone, Hash)]
 pub struct Semver<'a> {
     // todo!()
     pub components: Vec<usize>,
