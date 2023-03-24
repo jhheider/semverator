@@ -23,6 +23,8 @@ fn main() -> Result<()> {
 // TODO: factor out as much as possible for testing
 #[cfg(not(tarpaulin_include))]
 fn handle_command(matches: Option<(&str, &ArgMatches)>) -> Result<()> {
+    use crate::semver::bump::SemverComponent;
+
     match matches {
         // Semver::validate
         Some(("validate", args)) => {
@@ -81,6 +83,17 @@ fn handle_command(matches: Option<(&str, &ArgMatches)>) -> Result<()> {
             } else {
                 bail!("{} is not less than {}", left.raw, right.raw);
             }
+        }
+
+        // Semver::bump
+        Some(("bump", args)) => {
+            let v_in = get_arg::<Semver>(args, "semver")?;
+            let bump = get_arg::<SemverComponent>(args, "bump")?;
+
+            let v_out = v_in.bump(&bump)?;
+
+            println!("{}", v_out.raw);
+            Ok(())
         }
 
         // Range::validate

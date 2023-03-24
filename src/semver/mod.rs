@@ -1,3 +1,4 @@
+pub mod bump;
 mod compare;
 mod parse;
 

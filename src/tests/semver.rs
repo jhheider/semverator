@@ -1,4 +1,4 @@
-use crate::semver::Semver;
+use crate::semver::{bump::SemverComponent, Semver};
 use anyhow::Result;
 
 #[test]
@@ -57,6 +57,27 @@ fn test_compare() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_bump() -> Result<()> {
+    let a = Semver::parse("1.2.3")?;
+    let b = Semver::parse("1.2.4")?;
+    let c = Semver::parse("1.3.0")?;
+    let d = Semver::parse("2.0.0")?;
+
+    assert_eq!(a.bump(&SemverComponent::Major)?, d);
+    assert_eq!(a.bump(&SemverComponent::Minor)?, c);
+    assert_eq!(a.bump(&SemverComponent::Patch)?, b);
+    assert_eq!(a.bump(&SemverComponent::None)?, a);
+
+    assert_eq!(SemverComponent::from("major"), SemverComponent::Major);
+    assert_eq!(SemverComponent::from("minor"), SemverComponent::Minor);
+    assert_eq!(SemverComponent::from("patch"), SemverComponent::Patch);
+    assert_eq!(SemverComponent::from("gibberish"), SemverComponent::None);
+
+    Ok(())
+}
+
 #[test]
 fn test_infinty() {
     let inf = Semver::infinty();

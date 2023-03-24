@@ -42,4 +42,8 @@ impl<'a> Semver<'a> {
             ..Default::default()
         })
     }
+
+    pub fn from(input: (usize, usize, usize)) -> Result<Self> {
+        Self::parse(&format!("{}.{}.{}", input.0, input.1, input.2))
+    }
 }

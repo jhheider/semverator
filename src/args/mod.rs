@@ -1,4 +1,7 @@
-use crate::{range::Range, semver::Semver};
+use crate::{
+    range::Range,
+    semver::{bump::SemverComponent, Semver},
+};
 use anyhow::{Context, Result};
 use clap::{arg, command, ArgAction, ArgMatches, Command};
 
@@ -39,6 +42,16 @@ pub fn setup() -> Command {
                 .about("checks if left < right")
                 .arg(arg!([left] "the first version to compare").value_parser(Semver::parse))
                 .arg(arg!([right] "the second version to compare").value_parser(Semver::parse)),
+        )
+        // Semver::bump
+        .subcommand(
+            Command::new("bump")
+                .about("bumps a version")
+                .arg(arg!([semver] "the version to bump").value_parser(Semver::parse))
+                .arg(
+                    arg!([bump] "the bump to apply (major|minor|patch)")
+                        .value_parser(SemverComponent::parse),
+                ),
         )
         // Range::validate-range
         .subcommand(
