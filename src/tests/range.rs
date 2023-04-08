@@ -74,6 +74,22 @@ fn test_satisfies() -> Result<()> {
     assert!(!rd.satisfies(&sa));
     assert!(rd.satisfies(&sb));
 
+    let re = Range::parse("^0.1.0")?;
+
+    let se = Semver::parse("0.1.1")?;
+    let sf = Semver::parse("0.2.1")?;
+
+    assert!(re.satisfies(&se));
+    assert!(!re.satisfies(&sf));
+
+    let rg = Range::parse("^0.0.5")?;
+
+    let sg = Semver::parse("0.0.5")?;
+    let sh = Semver::parse("0.0.6")?;
+
+    assert!(rg.satisfies(&sg));
+    assert!(!rg.satisfies(&sh));
+
     Ok(())
 }
 

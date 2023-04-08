@@ -52,8 +52,15 @@ impl<'a> Constraint<'a> {
             return match cap.get(1).context("invalid character")?.as_str() {
                 "^" => {
                     let v1 = Semver::parse(cap.get(2).context("invalid description")?.as_str())?;
-                    let v2 = Semver::parse(&format!("{}", v1.major + 1))?;
-                    Ok(Constraint::Contiguous(v1, v2))
+                    if v1.major > 0 {
+                        let v2 = Semver::parse(&format!("{}", v1.major + 1))?;
+                        return Ok(Constraint::Contiguous(v1, v2));
+                    } else if v1.minor > 0 {
+                        let v2 = Semver::parse(&format!("{}.{}", v1.major, v1.minor + 1))?;
+                        return Ok(Constraint::Contiguous(v1, v2));
+                    } else {
+                        return Ok(Constraint::Single(v1));
+                    }
                 }
                 "~" => {
                     let v1 = Semver::parse(cap.get(2).context("invalid description")?.as_str())?;
