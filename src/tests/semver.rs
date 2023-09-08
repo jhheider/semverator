@@ -73,14 +73,15 @@ fn test_compare() -> Result<()> {
     assert!(c.lt(&d));
     assert!(!d.lt(&c));
 
-    let e = Semver::parse("1.1.1-alpha.1")?;
-    let f = Semver::parse("1.1.1-alpha.2")?;
-    let g = Semver::parse("1.1.1-beta.1")?;
-    let h = Semver::parse("1.1.1-alpha.1+8ec0834")?;
-    let i = Semver::parse("1.1.1-alpha.1+7ec0834")?;
-    let j = Semver::parse("1.1.1-alpha.2+7ec0834")?;
+    let e = Semver::parse("1.2.3-alpha.1")?;
+    let f = Semver::parse("1.2.3-alpha.2")?;
+    let g = Semver::parse("1.2.3-beta.1")?;
+    let h = Semver::parse("1.2.3-alpha.1+8ec0834")?;
+    let i = Semver::parse("1.2.3-alpha.1+7ec0834")?;
+    let j = Semver::parse("1.2.3-alpha.2+7ec0834")?;
 
     assert!(e.eq(&e));
+    assert!(e.lt(&a)); // 1.2.3-alpha.1 < 1.2.3
     assert!(e.lt(&f));
     assert!(e.lt(&f));
     assert!(f.lt(&g));

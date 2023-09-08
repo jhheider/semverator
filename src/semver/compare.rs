@@ -27,6 +27,11 @@ impl Semver {
             }
         }
 
+        // Special case: all prerelease versions are less than no prerelease
+        if self.prerelease.is_empty() && !other.prerelease.is_empty() {
+            return Compare::Gt;
+        }
+
         let len = self.prerelease.len().max(other.prerelease.len());
         for x in 0..len {
             let a = self.prerelease.get(x);
