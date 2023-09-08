@@ -30,6 +30,8 @@ impl Semver {
         // Special case: all prerelease versions are less than no prerelease
         if self.prerelease.is_empty() && !other.prerelease.is_empty() {
             return Compare::Gt;
+        } else if !self.prerelease.is_empty() && other.prerelease.is_empty() {
+            return Compare::Lt;
         }
 
         let len = self.prerelease.len().max(other.prerelease.len());
@@ -37,8 +39,8 @@ impl Semver {
             let a = self.prerelease.get(x);
             let b = other.prerelease.get(x);
             match (a, b) {
-                (None, _) => return Compare::Gt,
-                (_, None) => return Compare::Lt,
+                (None, _) => return Compare::Lt,
+                (_, None) => return Compare::Gt,
                 (Some(a), Some(b)) if a > b => return Compare::Gt,
                 (Some(a), Some(b)) if a < b => return Compare::Lt,
                 _ => continue,
