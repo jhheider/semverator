@@ -10,8 +10,8 @@ pub struct Semver {
     pub minor: usize,
     patch: usize,
 
-    _prerelease: Vec<String>,
-    _build: Vec<String>,
+    prerelease: Vec<String>,
+    build: Vec<String>,
 
     pub raw: String,
 }

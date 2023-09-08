@@ -62,8 +62,8 @@ impl Semver {
             major,
             minor,
             patch,
-            _prerelease: prerelease,
-            _build: build,
+            prerelease,
+            build,
             raw,
         })
     }
