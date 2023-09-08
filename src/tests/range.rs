@@ -114,9 +114,9 @@ fn test_max() -> Result<()> {
         Semver::parse("4.8")?,
     ];
 
-    assert_eq!(ra.max(&sa).unwrap().raw, "17.8");
-    assert_eq!(rb.max(&sa).unwrap().raw, "14.5");
-    assert_eq!(rc.max(&sa).unwrap().raw, "16.8");
+    assert_eq!(ra.max(&sa).unwrap().raw, "17.8.0");
+    assert_eq!(rb.max(&sa).unwrap().raw, "14.5.0");
+    assert_eq!(rc.max(&sa).unwrap().raw, "16.8.0");
     assert!(rd.max(&sa).is_none());
     Ok(())
 }
@@ -128,13 +128,13 @@ fn test_intersect() -> Result<()> {
 
     let ia = ra.intersect(&rb);
     assert!(ia.is_ok());
-    assert_eq!(ia?.raw, rb.raw);
+    assert_eq!(ia?.raw, "=3.11.0");
 
     let rc = Range::parse("^3.9")?;
 
     let ib = ra.intersect(&rc);
     assert!(ib.is_ok());
-    assert_eq!(ib?.raw, ">=3.9<4");
+    assert_eq!(ib?.raw, ">=3.9.0<4.0.0");
 
     let rd = Range::parse("*")?;
 
@@ -148,7 +148,7 @@ fn test_intersect() -> Result<()> {
     let id = re.intersect(&rf);
     assert!(id.is_err());
 
-    let rg = Range::parse("=3.8")?;
+    let rg = Range::parse("=3.8.0")?;
 
     let ie = ra.intersect(&rg);
     assert!(ie.is_ok());
@@ -159,13 +159,13 @@ fn test_intersect() -> Result<()> {
 
     let r#if = rh.intersect(&ri);
     assert!(r#if.is_ok());
-    assert_eq!(r#if?.raw, ">=11.3<12");
+    assert_eq!(r#if?.raw, ">=11.3.0<12.0.0");
 
     let rj = Range::parse("^11.3,^12.2")?;
 
     let ig = rh.intersect(&rj);
     assert!(ig.is_ok());
-    assert_eq!(ig?.raw, ">=11.3<12,>=12.2<13");
+    assert_eq!(ig?.raw, ">=11.3.0<12.0.0,>=12.2.0<13.0.0");
 
     let rk = Range::parse("*")?;
 
@@ -177,8 +177,8 @@ fn test_intersect() -> Result<()> {
     assert!(ii.is_ok());
     assert_eq!(ii?.raw, ra.raw);
 
-    let rl = Range::parse("=3.8")?;
-    let rm = Range::parse("=3.9")?;
+    let rl = Range::parse("=3.8.0")?;
+    let rm = Range::parse("=3.9.0")?;
 
     let ij = rg.intersect(&rl);
     let ik = rg.intersect(&rm);

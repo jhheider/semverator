@@ -2,22 +2,21 @@ pub mod bump;
 mod compare;
 mod parse;
 
-#[derive(Default, Debug, Clone, Hash)]
-pub struct Semver<'a> {
+#[derive(Default, Debug, Clone, Eq)]
+pub struct Semver {
     pub components: Vec<usize>,
 
     pub major: usize,
     pub minor: usize,
     patch: usize,
 
-    // todo!()
-    _prerelease: Vec<&'a str>,
-    _build: Vec<&'a str>,
+    _prerelease: Vec<String>,
+    _build: Vec<String>,
 
     pub raw: String,
 }
 
-impl<'a> Semver<'a> {
+impl Semver {
     pub fn infinty() -> Self {
         Self {
             components: vec![usize::MAX, usize::MAX, usize::MAX],

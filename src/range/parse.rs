@@ -4,7 +4,7 @@ use super::{Constraint, Range};
 use anyhow::{bail, Context, Result};
 use regex::Regex;
 
-impl<'a> Range<'a> {
+impl Range {
     pub fn parse(range: &str) -> Result<Self> {
         let raw = range.to_string();
         let mut set = Vec::new();
@@ -34,7 +34,7 @@ impl<'a> Range<'a> {
     }
 }
 
-impl<'a> Constraint<'a> {
+impl Constraint {
     fn parse(constraint: &str) -> Result<Self> {
         let re = Regex::new(r"^>=((\d+\.)*\d+)\s*(<((\d+\.)*\d+))?$")?;
         if let Some(cap) = re.captures(constraint) {

@@ -3,22 +3,40 @@ use anyhow::Result;
 
 #[test]
 fn test_parse() -> Result<()> {
-    let a = Semver::parse("1.2.3");
-    let b = Semver::parse("1.2.4");
-    let c = Semver::parse("1.2.four");
-    let d = Semver::parse("1.1.1q");
+    assert_eq!(Semver::parse("1.2.3.4.5.6")?.raw, "1.2.3.4.5.6");
+    assert_eq!(Semver::parse("1.2.3.4.5")?.raw, "1.2.3.4.5");
+    assert_eq!(Semver::parse("1.2.3.4")?.raw, "1.2.3.4");
+    assert_eq!(Semver::parse("1.2.3")?.raw, "1.2.3");
+    assert_eq!(Semver::parse("v1.2.3")?.raw, "1.2.3");
+    assert_eq!(Semver::parse("1.2")?.raw, "1.2.0");
+    assert_eq!(Semver::parse("v1.2")?.raw, "1.2.0");
+    assert_eq!(Semver::parse("1")?.raw, "1.0.0");
+    assert_eq!(Semver::parse("v1")?.raw, "1.0.0");
 
-    assert!(a.is_ok());
-    assert!(b.is_ok());
-    assert!(c.is_err());
-    assert!(d.is_ok());
+    assert_eq!(Semver::parse("9e")?.raw, "9e");
+    assert_eq!(Semver::parse("9e")?.components, [9, 5]);
+    assert_eq!(Semver::parse("3.3a")?.raw, "3.3a");
+    assert_eq!(Semver::parse("3.3a")?.components, [3, 3, 1]);
+    assert_eq!(Semver::parse("1.1.1q")?.raw, "1.1.1q");
+    assert_eq!(Semver::parse("1.1.1q")?.components, [1, 1, 1, 17]);
 
-    let d = d?;
+    assert_eq!(Semver::parse("1.2.3-alpha")?.raw, "1.2.3-alpha");
+    assert_eq!(Semver::parse("1.2-alpha")?.raw, "1.2.0-alpha");
+    assert_eq!(Semver::parse("1-alpha")?.raw, "1.0.0-alpha");
+    assert_eq!(Semver::parse("1.2.3-alpha.1")?.raw, "1.2.3-alpha.1");
 
-    assert_eq!(a?.raw, "1.2.3");
-    assert_eq!(b?.raw, "1.2.4");
-    assert_eq!(d.raw, "1.1.1q");
-    assert_eq!(d.components, [1, 1, 1, 17]);
+    assert_eq!(Semver::parse("1.2.3+build")?.raw, "1.2.3+build");
+    assert_eq!(Semver::parse("1.2+build")?.raw, "1.2.0+build");
+    assert_eq!(Semver::parse("1+build")?.raw, "1.0.0+build");
+    assert_eq!(Semver::parse("1.2.3+build.1")?.raw, "1.2.3+build.1");
+
+    assert_eq!(Semver::parse("1.2.3-alpha+build")?.raw, "1.2.3-alpha+build");
+    assert_eq!(Semver::parse("1.2-alpha+build")?.raw, "1.2.0-alpha+build");
+    assert_eq!(Semver::parse("1-alpha+build")?.raw, "1.0.0-alpha+build");
+    assert_eq!(
+        Semver::parse("1.2.3-alpha.1+build.1")?.raw,
+        "1.2.3-alpha.1+build.1"
+    );
 
     Ok(())
 }

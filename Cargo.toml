@@ -1,6 +1,6 @@
 [package]
 name = "semverator"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2021"
 license = "Apache-2.0"
 readme = "README.md"
@@ -11,6 +11,6 @@ keywords = ["semver", "semantic", "versioning", "teaxyz"]
 categories = ["command-line-utilities"]
 
 [dependencies]
-anyhow = "1.0.68"
-clap = { version = '4.1.1', features = ['cargo'] }
-regex = "1.7.1"
+anyhow = "1.0.75"
+clap = { version = '4.4.2', features = ['cargo'] }
+regex = "1.9.5"

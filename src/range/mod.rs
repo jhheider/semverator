@@ -1,4 +1,5 @@
 use crate::semver::Semver;
+use std::hash::{Hash, Hasher};
 
 mod intersect;
 mod max;
@@ -6,21 +7,21 @@ mod parse;
 mod satisfies;
 
 #[derive(Debug, Clone)]
-pub struct Range<'a> {
+pub struct Range {
     pub raw: String,
-    pub set: Vec<Constraint<'a>>,
+    pub set: Vec<Constraint>,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq)]
-pub enum Constraint<'a> {
+pub enum Constraint {
     Any,
-    Single(Semver<'a>),
-    Contiguous(Semver<'a>, Semver<'a>),
+    Single(Semver),
+    Contiguous(Semver, Semver),
 }
 
-impl<'a> Eq for Constraint<'a> {}
+impl Eq for Constraint {}
 
-impl<'a> Constraint<'a> {
+impl Constraint {
     pub fn raw(&self) -> String {
         match self {
             Constraint::Any => "*".to_string(),
@@ -30,9 +31,15 @@ impl<'a> Constraint<'a> {
     }
 }
 
-impl<'a> Range<'a> {
+impl Range {
     pub fn raw(&self) -> String {
         let rv = self.set.iter().map(|c| c.raw()).collect::<Vec<String>>();
         rv.join(",")
+    }
+}
+
+impl Hash for Semver {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.components.hash(state);
     }
 }

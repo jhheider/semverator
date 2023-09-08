@@ -2,7 +2,7 @@ use crate::semver::Semver;
 
 use super::{Constraint, Range};
 
-impl<'a> Range<'a> {
+impl Range {
     pub fn max(&self, semvers: &[Semver]) -> Option<Semver> {
         let rv = semvers.iter().filter(|s| self.satisfies(s)).fold(
             Semver::parse("0").unwrap(),
@@ -22,7 +22,7 @@ impl<'a> Range<'a> {
     }
 }
 
-impl<'a> Constraint<'a> {
+impl Constraint {
     pub fn satisfies(&self, semver: &Semver) -> bool {
         match self {
             Constraint::Any => true,

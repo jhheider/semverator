@@ -2,7 +2,7 @@ use anyhow::{bail, Result};
 
 use super::Semver;
 
-impl<'a> Semver<'a> {
+impl Semver {
     pub fn bump(&self, which: &SemverComponent) -> Result<Self> {
         match which {
             SemverComponent::Major => Self::from((self.major + 1, 0, 0)),

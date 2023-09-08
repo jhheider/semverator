@@ -1,8 +1,8 @@
 use super::{Constraint, Range};
 use anyhow::{bail, Result};
 
-impl<'a> Range<'a> {
-    pub fn intersect(&self, range: &'a Range) -> Result<Range> {
+impl Range {
+    pub fn intersect(&self, range: &Range) -> Result<Range> {
         let a = self;
         let b = range;
 
