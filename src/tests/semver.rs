@@ -96,6 +96,40 @@ fn test_compare() -> Result<()> {
 }
 
 #[test]
+fn test_sort() -> Result<()> {
+    let a = Semver::parse("1.2.3")?;
+    let b = Semver::parse("10.3.4")?;
+    let c = Semver::parse("1.2.4")?;
+    let d = Semver::parse("1.2.3.1")?;
+    let e = Semver::parse("2.3.4")?;
+    let mut s1 = vec![a.clone(), b.clone(), c.clone(), d.clone(), e.clone()];
+    s1.sort();
+
+    let s2 = vec![a, d, c, e, b];
+
+    assert_eq!(s1, s2);
+
+    Ok(())
+}
+
+#[test]
+fn test_calver_sort() -> Result<()> {
+    let a = Semver::parse("1.2.3")?;
+    let b = Semver::parse("2.3.4")?;
+    let c = Semver::parse("2023.03.04")?;
+    let d = Semver::parse("1.2.3.1")?;
+    let e = Semver::parse("3.4.5")?;
+    let mut s1 = vec![a.clone(), b.clone(), c.clone(), d.clone(), e.clone()];
+    s1.sort();
+
+    let s2 = vec![c, a, d, b, e];
+
+    assert_eq!(s1, s2);
+
+    Ok(())
+}
+
+#[test]
 fn test_bump() -> Result<()> {
     let a = Semver::parse("1.2.3")?;
     let b = Semver::parse("1.2.4")?;

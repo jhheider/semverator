@@ -1,37 +1,48 @@
 use super::Semver;
+use std::cmp::Ordering;
 
 impl Semver {
     pub fn neq(&self, other: &Semver) -> bool {
-        self.compare(other) != Compare::Eq
+        self.compare(other) != Ordering::Equal
     }
 
     pub fn gt(&self, other: &Semver) -> bool {
-        self.compare(other) == Compare::Gt
+        self.compare(other) == Ordering::Greater
     }
 
     pub fn lt(&self, other: &Semver) -> bool {
-        self.compare(other) == Compare::Lt
+        self.compare(other) == Ordering::Less
     }
 
-    fn compare(&self, other: &Semver) -> Compare {
+    fn compare(&self, other: &Semver) -> Ordering {
         let len = self.components.len().max(other.components.len());
         for x in 0..len {
+            if x == 0 {
+                match (
+                    self.major > 1900 && self.major < usize::MAX,
+                    other.major > 1900 && other.major < usize::MAX,
+                ) {
+                    (true, false) => return Ordering::Less,
+                    (false, true) => return Ordering::Greater,
+                    _ => (),
+                }
+            }
             let a = self.components.get(x);
             let b = other.components.get(x);
             match (a, b) {
-                (None, _) => return Compare::Lt,
-                (_, None) => return Compare::Gt,
-                (Some(a), Some(b)) if a > b => return Compare::Gt,
-                (Some(a), Some(b)) if a < b => return Compare::Lt,
+                (None, _) => return Ordering::Less,
+                (_, None) => return Ordering::Greater,
+                (Some(a), Some(b)) if a > b => return Ordering::Greater,
+                (Some(a), Some(b)) if a < b => return Ordering::Less,
                 _ => continue,
             }
         }
 
         // Special case: all prerelease versions are less than no prerelease
         if self.prerelease.is_empty() && !other.prerelease.is_empty() {
-            return Compare::Gt;
+            return Ordering::Greater;
         } else if !self.prerelease.is_empty() && other.prerelease.is_empty() {
-            return Compare::Lt;
+            return Ordering::Less;
         }
 
         let len = self.prerelease.len().max(other.prerelease.len());
@@ -39,10 +50,10 @@ impl Semver {
             let a = self.prerelease.get(x);
             let b = other.prerelease.get(x);
             match (a, b) {
-                (None, _) => return Compare::Lt,
-                (_, None) => return Compare::Gt,
-                (Some(a), Some(b)) if a > b => return Compare::Gt,
-                (Some(a), Some(b)) if a < b => return Compare::Lt,
+                (None, _) => return Ordering::Less,
+                (_, None) => return Ordering::Greater,
+                (Some(a), Some(b)) if a > b => return Ordering::Greater,
+                (Some(a), Some(b)) if a < b => return Ordering::Less,
                 _ => continue,
             }
         }
@@ -52,27 +63,32 @@ impl Semver {
             let a = self.build.get(x);
             let b = other.build.get(x);
             match (a, b) {
-                (None, _) => return Compare::Lt,
-                (_, None) => return Compare::Gt,
-                (Some(a), Some(b)) if a > b => return Compare::Gt,
-                (Some(a), Some(b)) if a < b => return Compare::Lt,
+                (None, _) => return Ordering::Less,
+                (_, None) => return Ordering::Greater,
+                (Some(a), Some(b)) if a > b => return Ordering::Greater,
+                (Some(a), Some(b)) if a < b => return Ordering::Less,
                 _ => continue,
             }
         }
 
-        Compare::Eq
+        Ordering::Equal
     }
 }
 
 impl PartialEq for Semver {
     fn eq(&self, other: &Semver) -> bool {
-        self.compare(other) == Compare::Eq
+        self.compare(other) == Ordering::Equal
     }
 }
 
-#[derive(PartialEq)]
-enum Compare {
-    Eq,
-    Gt,
-    Lt,
+impl PartialOrd for Semver {
+    fn partial_cmp(&self, other: &Semver) -> Option<std::cmp::Ordering> {
+        Some(self.compare(other))
+    }
+}
+
+impl Ord for Semver {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.compare(other)
+    }
 }
