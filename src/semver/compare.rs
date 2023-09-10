@@ -81,14 +81,14 @@ impl PartialEq for Semver {
     }
 }
 
-impl PartialOrd for Semver {
-    fn partial_cmp(&self, other: &Semver) -> Option<std::cmp::Ordering> {
-        Some(self.compare(other))
+impl Ord for Semver {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.compare(other)
     }
 }
 
-impl Ord for Semver {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.compare(other)
+impl PartialOrd for Semver {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
