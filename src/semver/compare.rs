@@ -14,21 +14,25 @@ impl Semver {
         self.compare(other) == Ordering::Less
     }
 
+    // Treat majors >1996 as calver, and less than 0.0.0.
+    fn handle_calver(&self) -> Vec<usize> {
+        if self.major < 1996 || self.major == usize::MAX {
+            self.components.clone()
+        } else {
+            let mut cmps = vec![0, 0, 0];
+            cmps.extend(self.components.iter().cloned());
+            cmps
+        }
+    }
+
     fn compare(&self, other: &Semver) -> Ordering {
-        let len = self.components.len().max(other.components.len());
+        let acmps = self.handle_calver();
+        let bcmps = other.handle_calver();
+
+        let len = acmps.len().max(bcmps.len());
         for x in 0..len {
-            if x == 0 {
-                match (
-                    self.major > 1900 && self.major < usize::MAX,
-                    other.major > 1900 && other.major < usize::MAX,
-                ) {
-                    (true, false) => return Ordering::Less,
-                    (false, true) => return Ordering::Greater,
-                    _ => (),
-                }
-            }
-            let a = self.components.get(x);
-            let b = other.components.get(x);
+            let a = acmps.get(x);
+            let b = bcmps.get(x);
             match (a, b) {
                 (None, _) => return Ordering::Less,
                 (_, None) => return Ordering::Greater,
