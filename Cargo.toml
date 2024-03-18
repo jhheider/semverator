@@ -1,13 +1,13 @@
 [package]
 name = "semverator"
-version = "0.5.0"
+version = "0.5.1"
 edition = "2021"
 license = "Apache-2.0"
 readme = "README.md"
-description = "A command line tool for working with semantic versioning (tea.xyz implementation)"
+description = "A command line tool for working with semantic versioning (libpkgx implementation)"
 homepage = "https://github.com/jhheider/semverator"
 repository = "https://github.com/jhheider/semverator"
-keywords = ["semver", "semantic", "versioning", "teaxyz"]
+keywords = ["semver", "semantic", "versioning", "pkgx"]
 categories = ["command-line-utilities"]
 
 [dependencies]

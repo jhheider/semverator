@@ -5,13 +5,13 @@
 
 # semverator
 
-Pure rust implementation of [teaxyz/lib:semver.ts](https://github.com/teaxyz/lib/blob/main/src/utils/semver.ts)
+Pure rust implementation of [libpkgx:utils/semver.ts](https://github.com/pkgxdev/libpkgx/blob/main/src/utils/semver.ts)
 for command-line usage.
 
 ## Install
 
-`cargo install semverator` or, for [tea](https://tea.xyz) users,
-`tea +crates.io/semverator true`.
+`cargo install semverator` or, for [pkgx](https://pkgx.dev) users,
+`pkgx +crates.io/semverator`.
 
 ## Usage
 
@@ -19,7 +19,7 @@ Well, thanks to [clap](https://github.com/clap-rs/clap), the help system flows
 nicely from the implementation:
 
 ```sh
-A command line tool for working with semantic versioning (tea.xyz implementation)
+A command line tool for working with semantic versioning (libpkgx implementation)
 
 Usage: semverator <COMMAND>
 
@@ -38,4 +38,4 @@ Commands:
 Options:
   -h, --help     Print help
   -V, --version  Print version
-  ```
+```
