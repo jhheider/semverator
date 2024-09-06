@@ -1,0 +1,18 @@
+[package]
+name = "libsemverator"
+version = "0.5.1"
+edition = "2021"
+license = "Apache-2.0"
+readme = "README.md"
+description = "A library for working with semantic versioning (libpkgx implementation)"
+homepage = "https://github.com/jhheider/semverator"
+repository = "https://github.com/jhheider/semverator"
+keywords = ["semver", "semantic", "versioning", "pkgx"]
+categories = ["command-line-utilities"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+anyhow = "1.0.75"
+regex = "1.9.5"
