@@ -14,7 +14,7 @@ jobs:
       RUSTFLAGS: "-D warnings"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -22,7 +22,7 @@ jobs:
           override: true
       - name: Release Build
         run: cargo build -p semverator --release
-      - name: 'Upload Artifact'
+      - name: "Upload Artifact"
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PROJECT_NAME_UNDERSCORE }}
@@ -32,7 +32,7 @@ jobs:
     name: Publish to crates.io
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -40,9 +40,4 @@ jobs:
           override: true
       - uses: katyo/publish-crates@v2
         with:
-            registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-            path: './cli'
-      - uses: katyo/publish-crates@v2
-        with:
-            registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-            path: './lib'
+          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
