@@ -1,16 +1,14 @@
 extern crate clap;
 
 mod args;
-mod range;
-mod semver;
 #[cfg(test)]
 mod tests;
 
 use anyhow::{bail, Result};
 use args::{get_arg, get_arg_vec};
 use clap::ArgMatches;
-use range::Range;
-use semver::Semver;
+use libsemverator::range::Range;
+use libsemverator::semver::Semver;
 
 #[cfg(not(tarpaulin_include))]
 fn main() -> Result<()> {
@@ -23,7 +21,7 @@ fn main() -> Result<()> {
 // TODO: factor out as much as possible for testing
 #[cfg(not(tarpaulin_include))]
 fn handle_command(matches: Option<(&str, &ArgMatches)>) -> Result<()> {
-    use crate::semver::bump::SemverComponent;
+    use libsemverator::semver::bump::SemverComponent;
 
     match matches {
         // Semver::validate

@@ -1,9 +1,9 @@
-use crate::{
+use anyhow::{Context, Result};
+use clap::{arg, command, ArgAction, ArgMatches, Command};
+use libsemverator::{
     range::Range,
     semver::{bump::SemverComponent, Semver},
 };
-use anyhow::{Context, Result};
-use clap::{arg, command, ArgAction, ArgMatches, Command};
 
 pub fn setup() -> Command {
     command!()
