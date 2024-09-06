@@ -13,7 +13,7 @@ categories = ["command-line-utilities"]
 [dependencies]
 anyhow = "1.0.75"
 clap = { version = '4.4.2', features = ['cargo'] }
-libsemverator = { path = "../lib" }
+libsemverator = { path = "../lib", version = "0.6.0" }
 
 [lints.rust]
 unexpected_cfgs = { level = "allow", check-cfg = ['cfg(tarpaulin_include)'] }
