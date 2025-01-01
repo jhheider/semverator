@@ -47,7 +47,17 @@ impl Constraint {
             return Ok(Constraint::Contiguous(v1, v2));
         }
 
+        // ^0 is a special case, in that it doesn't work like
+        // ^0.x or ^0.x.y, but rather like any other ^x
+        if constraint == "^0" {
+            return Ok(Constraint::Contiguous(
+                Semver::parse("0.0.0")?,
+                Semver::parse("1.0.0")?,
+            ));
+        }
+
         let re = Regex::new(r"^([~=<^])(.+)$")?;
+
         if let Some(cap) = re.captures(constraint) {
             return match cap.get(1).context("invalid character")?.as_str() {
                 "^" => {
