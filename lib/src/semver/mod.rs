@@ -1,6 +1,6 @@
 pub mod bump;
-mod compare;
-mod parse;
+pub mod compare;
+pub mod parse;
 
 #[derive(Default, Debug, Clone, Eq)]
 pub struct Semver {
@@ -8,10 +8,10 @@ pub struct Semver {
 
     pub major: usize,
     pub minor: usize,
-    patch: usize,
+    pub patch: usize,
 
-    prerelease: Vec<String>,
-    build: Vec<String>,
+    pub prerelease: Vec<String>,
+    pub build: Vec<String>,
 
     pub raw: String,
 }

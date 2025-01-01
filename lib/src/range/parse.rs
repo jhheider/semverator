@@ -35,7 +35,7 @@ impl Range {
 }
 
 impl Constraint {
-    fn parse(constraint: &str) -> Result<Self> {
+    pub fn parse(constraint: &str) -> Result<Self> {
         let re = Regex::new(r"^>=((\d+\.)*\d+)\s*(<((\d+\.)*\d+))?$")?;
         if let Some(cap) = re.captures(constraint) {
             let v1 = Semver::parse(cap.get(1).context("invalid description")?.as_str())?;

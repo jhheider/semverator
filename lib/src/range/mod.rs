@@ -1,10 +1,10 @@
 use crate::semver::Semver;
 use std::hash::{Hash, Hasher};
 
-mod intersect;
-mod max;
-mod parse;
-mod satisfies;
+pub mod intersect;
+pub mod max;
+pub mod parse;
+pub mod satisfies;
 
 #[derive(Debug, Clone)]
 pub struct Range {
