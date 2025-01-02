@@ -2,7 +2,15 @@ use crate::semver::Semver;
 
 use super::{Constraint, Range};
 use anyhow::{bail, Context, Result};
+use lazy_static::lazy_static;
 use regex::Regex;
+
+lazy_static! {
+    static ref RANGE_REGEX: Regex = Regex::new(r"\s*(,|\|\|)\s*").unwrap();
+    static ref CONSTRAINT_REGEX_RANGE: Regex =
+        Regex::new(r"^>=((\d+\.)*\d+)\s*(<((\d+\.)*\d+))?$").unwrap();
+    static ref CONSTRAINT_REGEX_SIMPLE: Regex = Regex::new(r"^([~=<^])(.+)$").unwrap();
+}
 
 impl Range {
     pub fn parse(range: &str) -> Result<Self> {
@@ -17,8 +25,7 @@ impl Range {
             set.push(Constraint::Any);
             return Ok(Self { raw, set });
         }
-        let re = Regex::new(r"\s*(,|\|\|)\s*")?;
-        set = re
+        set = RANGE_REGEX
             .split(range)
             .map(Constraint::parse)
             .collect::<Result<Vec<Constraint>>>()?;
@@ -36,8 +43,7 @@ impl Range {
 
 impl Constraint {
     pub fn parse(constraint: &str) -> Result<Self> {
-        let re = Regex::new(r"^>=((\d+\.)*\d+)\s*(<((\d+\.)*\d+))?$")?;
-        if let Some(cap) = re.captures(constraint) {
+        if let Some(cap) = CONSTRAINT_REGEX_RANGE.captures(constraint) {
             let v1 = Semver::parse(cap.get(1).context("invalid description")?.as_str())?;
             let v2 = if cap.get(3).is_some() {
                 Semver::parse(cap.get(4).context("invalid description")?.as_str())?
@@ -56,9 +62,7 @@ impl Constraint {
             ));
         }
 
-        let re = Regex::new(r"^([~=<^])(.+)$")?;
-
-        if let Some(cap) = re.captures(constraint) {
+        if let Some(cap) = CONSTRAINT_REGEX_SIMPLE.captures(constraint) {
             return match cap.get(1).context("invalid character")?.as_str() {
                 "^" => {
                     let v1 = Semver::parse(cap.get(2).context("invalid description")?.as_str())?;

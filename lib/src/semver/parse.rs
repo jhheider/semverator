@@ -1,16 +1,21 @@
 use anyhow::{Context, Result};
+use lazy_static::lazy_static;
 use regex::Regex;
 
 use super::Semver;
 
+lazy_static! {
+    static ref FULL_REGEX: Regex =
+        Regex::new(r"^(\d+(?:\.\d+)*)([a-z])?(?:-([0-9A-Za-z-\.]+))?(?:\+([0-9A-Za-z-\.]+))?$")
+            .unwrap();
+    static ref SHORT_REGEX: Regex = Regex::new(r"^\d+(\.\d+)?([-\+].*)?$").unwrap();
+}
+
 impl Semver {
     pub fn parse(semver: &str) -> Result<Self> {
-        let re = Regex::new(
-            r"^(\d+(?:\.\d+)*)([a-z])?(?:-([0-9A-Za-z-\.]+))?(?:\+([0-9A-Za-z-\.]+))?$",
-        )?;
         let raw = semver.trim_start_matches('v').to_string();
 
-        let captures = re.captures(&raw).context("invalid semver")?;
+        let captures = FULL_REGEX.captures(&raw).context("invalid semver")?;
 
         let mut components: Vec<usize> = captures
             .get(1)
@@ -43,8 +48,7 @@ impl Semver {
             vec![]
         };
 
-        let short = Regex::new(r"^\d+(\.\d+)?([-\+].*)?$")?;
-        let raw = if short.is_match(&raw) {
+        let raw = if SHORT_REGEX.is_match(&raw) {
             let mut r = format!("{}.{}.{}", major, minor, patch);
             if !prerelease.is_empty() {
                 r.push_str(&format!("-{}", prerelease.join(".")));
