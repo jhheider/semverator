@@ -42,6 +42,7 @@ jobs:
             ~/.cargo/registry/cache
             target
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+      - run: cargo test --all-features
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
