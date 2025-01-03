@@ -77,6 +77,38 @@ impl Semver {
 
         Ordering::Equal
     }
+
+    /// checks @ syntax, eg. node@22.1
+    pub fn at(&self, at: &Semver) -> bool {
+        let mut cc1 = self.components.clone();
+        let cc2 = &at.components;
+
+        // helper function to get the last element of a slice
+        fn last(arr: &[usize]) -> usize {
+            *arr.last().unwrap()
+        }
+
+        if cc1.len() > cc2.len() {
+            return false;
+        }
+
+        // Ensure cc1 and cc2 have the same length by appending 0s to cc1
+        while cc1.len() < cc2.len() {
+            cc1.push(0);
+        }
+
+        if last(&cc1) + 1 != last(cc2) {
+            return false;
+        }
+
+        for i in 0..cc1.len() - 1 {
+            if cc1[i] != cc2[i] {
+                return false;
+            }
+        }
+
+        true
+    }
 }
 
 impl PartialEq for Semver {

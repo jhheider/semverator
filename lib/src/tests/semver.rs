@@ -156,3 +156,18 @@ fn test_infinty() {
     assert_eq!(inf.components, [usize::MAX, usize::MAX, usize::MAX]);
     assert_eq!(inf.raw, "Infinity.Infinity.Infinity");
 }
+
+#[test]
+fn test_display() -> Result<()> {
+    let a = Semver::parse("1.2.3")?;
+    let b = Semver::parse("1.2.3-alpha")?;
+    let c = Semver::parse("1.2.0")?;
+    let d = Semver::parse("1.0.0")?;
+
+    assert_eq!(a.to_string(), "1.2.3");
+    assert_eq!(b.to_string(), "1.2.3-alpha");
+    assert_eq!(c.to_string(), "1.2.0");
+    assert_eq!(d.to_string(), "1.0.0");
+
+    Ok(())
+}

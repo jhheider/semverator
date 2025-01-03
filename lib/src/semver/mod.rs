@@ -3,6 +3,7 @@ use std::fmt;
 pub mod bump;
 pub mod compare;
 pub mod parse;
+pub mod utils;
 
 #[derive(Default, Debug, Clone, Eq)]
 pub struct Semver {
@@ -41,6 +42,29 @@ impl fmt::Display for Semver {
                 .map(|c| c.to_string())
                 .collect::<Vec<_>>()
                 .join(".")
-        )
+        )?;
+        if !self.prerelease.is_empty() {
+            write!(
+                f,
+                "-{}",
+                self.prerelease
+                    .iter()
+                    .map(|c| c.to_string())
+                    .collect::<Vec<_>>()
+                    .join(".")
+            )?;
+        }
+        if !self.build.is_empty() {
+            write!(
+                f,
+                "+{}",
+                self.build
+                    .iter()
+                    .map(|c| c.to_string())
+                    .collect::<Vec<_>>()
+                    .join(".")
+            )?;
+        }
+        Ok(())
     }
 }

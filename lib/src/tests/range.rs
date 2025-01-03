@@ -203,3 +203,37 @@ fn test_intersect() -> Result<()> {
 
     Ok(())
 }
+
+#[test]
+fn test_at() -> Result<()> {
+    let sa = Semver::parse("1")?;
+    let sb = Semver::parse("1.1")?;
+    let sc = Semver::parse("1.1.1")?;
+    let sd = Semver::parse("1.1.1.1")?;
+
+    assert!(!sa.at(&sb));
+    assert!(sb.at(&sa));
+    assert!(!sb.at(&sc));
+    assert!(sc.at(&sb));
+    assert!(!sc.at(&sd));
+    assert!(sd.at(&sc));
+    assert!(!sa.at(&sd));
+    assert!(sd.at(&sa));
+
+    Ok(())
+}
+
+#[test]
+fn test_display() -> Result<()> {
+    let ra = Range::parse("^3.7")?;
+    let rb = Range::parse("=3.11")?;
+    let rc = Range::parse("^3.9")?;
+    let rd = Range::parse("*")?;
+
+    assert_eq!(ra.to_string(), "^3.7");
+    assert_eq!(rb.to_string(), "=3.11");
+    assert_eq!(rc.to_string(), "^3.9");
+    assert_eq!(rd.to_string(), "*");
+
+    Ok(())
+}
