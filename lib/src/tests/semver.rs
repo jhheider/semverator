@@ -163,11 +163,17 @@ fn test_display() -> Result<()> {
     let b = Semver::parse("1.2.3-alpha")?;
     let c = Semver::parse("1.2.0")?;
     let d = Semver::parse("1.0.0")?;
+    let e = Semver::parse("1.2.3-alpha.1+b40")?;
+    let f = Semver::parse("1.2.3-alpha.1+build.40")?;
+    let g = Semver::parse("1")?;
 
     assert_eq!(a.to_string(), "1.2.3");
     assert_eq!(b.to_string(), "1.2.3-alpha");
     assert_eq!(c.to_string(), "1.2.0");
     assert_eq!(d.to_string(), "1.0.0");
+    assert_eq!(e.to_string(), "1.2.3-alpha.1+b40");
+    assert_eq!(f.to_string(), "1.2.3-alpha.1+build.40");
+    assert_eq!(g.to_string(), "1");
 
     Ok(())
 }
