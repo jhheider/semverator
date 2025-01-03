@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub mod bump;
 pub mod compare;
 pub mod parse;
@@ -26,5 +28,19 @@ impl Semver {
             raw: "Infinity.Infinity.Infinity".to_string(),
             ..Default::default()
         }
+    }
+}
+
+impl fmt::Display for Semver {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            self.components
+                .iter()
+                .map(|c| c.to_string())
+                .collect::<Vec<_>>()
+                .join(".")
+        )
     }
 }
