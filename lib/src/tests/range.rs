@@ -206,19 +206,41 @@ fn test_intersect() -> Result<()> {
 
 #[test]
 fn test_at() -> Result<()> {
-    let sa = Semver::parse("1")?;
-    let sb = Semver::parse("1.1")?;
-    let sc = Semver::parse("1.1.1")?;
-    let sd = Semver::parse("1.1.1.1")?;
+    let ra = Range::parse(">=1.0<1.1")?;
 
-    // assert!(!sa.at(&sb));
-    // assert!(sb.at(&sa));
-    // assert!(!sb.at(&sc));
-    // assert!(sc.at(&sb));
-    // assert!(!sc.at(&sd));
-    // assert!(sd.at(&sc));
-    // assert!(!sa.at(&sd));
-    // assert!(sd.at(&sa));
+    assert_eq!(format!("{ra}"), "~1");
+
+    let rb = Range::parse("=1.1")?;
+
+    assert_eq!(format!("{rb}"), "=1.1");
+
+    let rc = Range::parse(">=1.1.0<1.1.1")?;
+
+    assert_eq!(format!("{rc}"), "@1.1.0");
+
+    let rd = Range::parse("=1.1.1")?;
+
+    assert_eq!(format!("{rd}"), "=1.1.1");
+
+    let re = Range::parse(">=1.1.1.0<1.1.1.1")?;
+
+    assert_eq!(format!("{re}"), "@1.1.1.0");
+
+    let rf = Range::parse("=1.1.1.0")?;
+
+    assert_eq!(format!("{rf}"), "=1.1.1.0");
+
+    let rg = Range::parse(">=1.1<1.1.1.1.1")?;
+
+    assert_eq!(format!("{rg}"), ">=1.1<1.1.1.1.1");
+
+    let rh = Range::parse(">=1.1.1<1.1.3")?;
+
+    assert_eq!(format!("{rh}"), ">=1.1.1<1.1.3");
+
+    let ri = Range::parse(">=1.1.1<1.2.2")?;
+
+    assert_eq!(format!("{ri}"), ">=1.1.1<1.2.2");
 
     Ok(())
 }
