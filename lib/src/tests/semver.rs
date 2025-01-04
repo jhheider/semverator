@@ -81,16 +81,20 @@ fn test_compare() -> Result<()> {
     let j = Semver::parse("1.2.3-alpha.1+7ec0834")?;
     let k = Semver::parse("1.2.3-alpha.2+7ec0834")?;
 
-    assert!(e.lt(&f));
-    assert!(f.eq(&f));
+    assert!(e.lt(&f)); // 1.2.3-alpha < 1.2.3-alpha.1
+    assert!(f.eq(&f)); // 1.2.3-alpha.1 == 1.2.3-alpha.1
     assert!(f.lt(&a)); // 1.2.3-alpha.1 < 1.2.3
-    assert!(f.lt(&g));
-    assert!(f.lt(&g));
-    assert!(g.lt(&h));
-    assert!(f.lt(&i));
-    assert!(i.gt(&j));
-    assert!(i.lt(&k));
-    assert!(j.lt(&k));
+    assert!(a.gt(&f)); // 1.2.3 > 1.2.3-alpha.1
+    assert!(f.lt(&g)); // 1.2.3-alpha.1 < 1.2.3-alpha.2
+    assert!(g.gt(&f)); // 1.2.3-alpha.2 > 1.2.3-alpha.1
+    assert!(g.lt(&h)); // 1.2.3-alpha.2 < 1.2.3-beta.1
+    assert!(f.lt(&i)); // 1.2.3-alpha.1 < 1.2.3-alpha.1+8ec0834
+    assert!(i.gt(&f)); // 1.2.3-alpha.1+8ec0834 > 1.2.3-alpha.1
+    assert!(i.eq(&i)); // 1.2.3-alpha.1+8ec0834 == 1.2.3-alpha.1+8ec0834
+    assert!(i.gt(&j)); // 1.2.3-alpha.1+8ec0834 > 1.2.3-alpha.1+7ec0834
+    assert!(j.lt(&i)); // 1.2.3-alpha.1+7ec0834 < 1.2.3-alpha.1+8ec0834
+    assert!(i.lt(&k)); // 1.2.3-alpha.1+8ec0834 < 1.2.3-alpha.2+7ec0834
+    assert!(j.lt(&k)); // 1.2.3-alpha.1+7ec0834 < 1.2.3-alpha.2+7ec0834
 
     Ok(())
 }

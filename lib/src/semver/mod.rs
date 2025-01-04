@@ -3,7 +3,6 @@ use std::fmt;
 pub mod bump;
 pub mod compare;
 pub mod parse;
-pub mod utils;
 
 #[derive(Default, Debug, Clone, Eq)]
 pub struct Semver {
