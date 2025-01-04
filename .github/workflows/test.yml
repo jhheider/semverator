@@ -62,5 +62,6 @@ jobs:
         run: |
           cargo install cargo-tarpaulin
           just coverage
-        env:
-          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+      - uses: coverallsapp/github-action@v2
+        with:
+          path-to-lcov: coverage/lcov.info

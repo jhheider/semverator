@@ -4,7 +4,7 @@ default:
 
 # Generate coverage/lcov.info
 coverage:
-  cargo tarpaulin --engine ptrace -o lcov --output-dir coverage --coveralls $COVERALLS_TOKEN
+  cargo tarpaulin --engine ptrace -o lcov --output-dir coverage
 
 # For getting ptrace as html on macos
 docker-coverage:
