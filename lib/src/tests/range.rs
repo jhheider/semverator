@@ -16,6 +16,10 @@ fn test_parse() -> Result<()> {
     let j = Range::parse("Your mom");
     let k = Range::parse("");
     let l = Range::parse(">=12");
+    let m = Range::parse("@1");
+    let n = Range::parse("@1.1");
+    let o = Range::parse("@1.1.1");
+    let p = Range::parse("@1.1.1.1");
 
     assert!(a.is_ok());
     assert!(b.is_ok());
@@ -29,6 +33,10 @@ fn test_parse() -> Result<()> {
     assert!(j.is_err());
     assert!(k.is_err());
     assert!(l.is_ok());
+    assert!(m.is_ok());
+    assert!(n.is_ok());
+    assert!(o.is_ok());
+    assert!(p.is_ok());
 
     assert_eq!(f?.set.len(), 5);
 
@@ -207,40 +215,40 @@ fn test_intersect() -> Result<()> {
 #[test]
 fn test_at() -> Result<()> {
     let ra = Range::parse(">=1.0<1.1")?;
-
-    assert_eq!(format!("{ra}"), "~1");
-
     let rb = Range::parse("=1.1")?;
 
+    assert_eq!(format!("{ra}"), "~1");
     assert_eq!(format!("{rb}"), "=1.1");
 
     let rc = Range::parse(">=1.1.0<1.1.1")?;
-
-    assert_eq!(format!("{rc}"), "@1.1.0");
-
     let rd = Range::parse("=1.1.1")?;
 
+    assert_eq!(format!("{rc}"), "@1.1.0");
     assert_eq!(format!("{rd}"), "=1.1.1");
 
     let re = Range::parse(">=1.1.1.0<1.1.1.1")?;
-
-    assert_eq!(format!("{re}"), "@1.1.1.0");
-
     let rf = Range::parse("=1.1.1.0")?;
 
+    assert_eq!(format!("{re}"), "@1.1.1.0");
     assert_eq!(format!("{rf}"), "=1.1.1.0");
 
     let rg = Range::parse(">=1.1<1.1.1.1.1")?;
-
-    assert_eq!(format!("{rg}"), ">=1.1<1.1.1.1.1");
-
     let rh = Range::parse(">=1.1.1<1.1.3")?;
-
-    assert_eq!(format!("{rh}"), ">=1.1.1<1.1.3");
-
     let ri = Range::parse(">=1.1.1<1.2.2")?;
 
+    assert_eq!(format!("{rg}"), ">=1.1<1.1.1.1.1");
+    assert_eq!(format!("{rh}"), ">=1.1.1<1.1.3");
     assert_eq!(format!("{ri}"), ">=1.1.1<1.2.2");
+
+    let rj = Range::parse("@1")?;
+    let rk = Range::parse("@1.1")?;
+    let rl = Range::parse("@1.1.1")?;
+    let rm = Range::parse("@1.1.1.1")?;
+
+    assert_eq!(format!("{rj}"), "^1");
+    assert_eq!(format!("{rk}"), "~1.1");
+    assert_eq!(format!("{rl}"), "@1.1.1");
+    assert_eq!(format!("{rm}"), "@1.1.1.1");
 
     Ok(())
 }
