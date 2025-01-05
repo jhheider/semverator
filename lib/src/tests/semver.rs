@@ -81,16 +81,20 @@ fn test_compare() -> Result<()> {
     let j = Semver::parse("1.2.3-alpha.1+7ec0834")?;
     let k = Semver::parse("1.2.3-alpha.2+7ec0834")?;
 
-    assert!(e.lt(&f));
-    assert!(f.eq(&f));
+    assert!(e.lt(&f)); // 1.2.3-alpha < 1.2.3-alpha.1
+    assert!(f.eq(&f)); // 1.2.3-alpha.1 == 1.2.3-alpha.1
     assert!(f.lt(&a)); // 1.2.3-alpha.1 < 1.2.3
-    assert!(f.lt(&g));
-    assert!(f.lt(&g));
-    assert!(g.lt(&h));
-    assert!(f.lt(&i));
-    assert!(i.gt(&j));
-    assert!(i.lt(&k));
-    assert!(j.lt(&k));
+    assert!(a.gt(&f)); // 1.2.3 > 1.2.3-alpha.1
+    assert!(f.lt(&g)); // 1.2.3-alpha.1 < 1.2.3-alpha.2
+    assert!(g.gt(&f)); // 1.2.3-alpha.2 > 1.2.3-alpha.1
+    assert!(g.lt(&h)); // 1.2.3-alpha.2 < 1.2.3-beta.1
+    assert!(f.lt(&i)); // 1.2.3-alpha.1 < 1.2.3-alpha.1+8ec0834
+    assert!(i.gt(&f)); // 1.2.3-alpha.1+8ec0834 > 1.2.3-alpha.1
+    assert!(i.eq(&i)); // 1.2.3-alpha.1+8ec0834 == 1.2.3-alpha.1+8ec0834
+    assert!(i.gt(&j)); // 1.2.3-alpha.1+8ec0834 > 1.2.3-alpha.1+7ec0834
+    assert!(j.lt(&i)); // 1.2.3-alpha.1+7ec0834 < 1.2.3-alpha.1+8ec0834
+    assert!(i.lt(&k)); // 1.2.3-alpha.1+8ec0834 < 1.2.3-alpha.2+7ec0834
+    assert!(j.lt(&k)); // 1.2.3-alpha.1+7ec0834 < 1.2.3-alpha.2+7ec0834
 
     Ok(())
 }
@@ -155,4 +159,25 @@ fn test_infinty() {
 
     assert_eq!(inf.components, [usize::MAX, usize::MAX, usize::MAX]);
     assert_eq!(inf.raw, "Infinity.Infinity.Infinity");
+}
+
+#[test]
+fn test_display() -> Result<()> {
+    let a = Semver::parse("1.2.3")?;
+    let b = Semver::parse("1.2.3-alpha")?;
+    let c = Semver::parse("1.2.0")?;
+    let d = Semver::parse("1.0.0")?;
+    let e = Semver::parse("1.2.3-alpha.1+b40")?;
+    let f = Semver::parse("1.2.3-alpha.1+build.40")?;
+    let g = Semver::parse("1")?;
+
+    assert_eq!(a.to_string(), "1.2.3");
+    assert_eq!(b.to_string(), "1.2.3-alpha");
+    assert_eq!(c.to_string(), "1.2.0");
+    assert_eq!(d.to_string(), "1.0.0");
+    assert_eq!(e.to_string(), "1.2.3-alpha.1+b40");
+    assert_eq!(f.to_string(), "1.2.3-alpha.1+build.40");
+    assert_eq!(g.to_string(), "1");
+
+    Ok(())
 }

@@ -9,7 +9,7 @@ lazy_static! {
     static ref RANGE_REGEX: Regex = Regex::new(r"\s*(,|\|\|)\s*").unwrap();
     static ref CONSTRAINT_REGEX_RANGE: Regex =
         Regex::new(r"^>=((\d+\.)*\d+)\s*(<((\d+\.)*\d+))?$").unwrap();
-    static ref CONSTRAINT_REGEX_SIMPLE: Regex = Regex::new(r"^([~=<^])(.+)$").unwrap();
+    static ref CONSTRAINT_REGEX_SIMPLE: Regex = Regex::new(r"^([~=<^@])(.+)$").unwrap();
 }
 
 impl Range {
@@ -89,6 +89,20 @@ impl Constraint {
                 "<" => {
                     let v1 = Semver::parse("0")?;
                     let v2 = Semver::parse(cap.get(2).context("invalid description")?.as_str())?;
+                    Ok(Constraint::Contiguous(v1, v2))
+                }
+                "@" => {
+                    let v1 = Semver::parse(cap.get(2).context("invalid description")?.as_str())?;
+                    let mut parts = v1.components.clone();
+                    let last = parts.last_mut().context("version too short")?;
+                    *last += 1;
+                    let v2 = Semver::parse(
+                        &parts
+                            .iter()
+                            .map(|c| c.to_string())
+                            .collect::<Vec<_>>()
+                            .join("."),
+                    )?;
                     Ok(Constraint::Contiguous(v1, v2))
                 }
                 "=" => Ok(Constraint::Single(Semver::parse(
