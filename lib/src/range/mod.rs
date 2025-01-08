@@ -1,4 +1,6 @@
 use crate::semver::Semver;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::{
     fmt,
     hash::{Hash, Hasher},
@@ -117,4 +119,25 @@ fn at(left: &Semver, right: &Semver) -> bool {
     }
 
     true
+}
+
+impl PartialEq for Range {
+    fn eq(&self, other: &Self) -> bool {
+        self.set == other.set
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for Range {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(&format!("{self}"))
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for Range {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let s = String::deserialize(deserializer)?;
+        Range::parse(&s).map_err(serde::de::Error::custom)
+    }
 }

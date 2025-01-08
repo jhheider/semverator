@@ -1,6 +1,7 @@
-use anyhow::Result;
-
 use crate::{range::Range, semver::Semver};
+use anyhow::Result;
+#[cfg(feature = "serde")]
+use serde_test::{assert_tokens, Token};
 
 #[test]
 fn test_parse() -> Result<()> {
@@ -276,6 +277,23 @@ fn test_display() -> Result<()> {
     assert_eq!(rh.to_string(), "~0.1.1");
     assert_eq!(ri.to_string(), ">=0.1.1");
     assert_eq!(rj.to_string(), ">=0.1.1<3");
+
+    Ok(())
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn test_serde() -> Result<()> {
+    let ra = Range::parse("^3.7")?;
+    let rb = Range::parse("=3.11")?;
+    let rc = Range::parse("^3.9")?;
+
+    assert_tokens(&ra, &[Token::Str("^3.7")]);
+    assert_tokens(&rb, &[Token::Str("=3.11")]);
+    assert_tokens(&rc, &[Token::Str("^3.9")]);
+
+    let rd = serde_json::from_str::<Range>("\"your mom\"");
+    assert!(rd.is_err());
 
     Ok(())
 }

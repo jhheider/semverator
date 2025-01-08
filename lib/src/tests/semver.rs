@@ -1,5 +1,7 @@
 use crate::semver::{bump::SemverComponent, Semver};
 use anyhow::Result;
+#[cfg(feature = "serde")]
+use serde_test::{assert_tokens, Token};
 
 #[test]
 fn test_parse() -> Result<()> {
@@ -178,6 +180,21 @@ fn test_display() -> Result<()> {
     assert_eq!(e.to_string(), "1.2.3-alpha.1+b40");
     assert_eq!(f.to_string(), "1.2.3-alpha.1+build.40");
     assert_eq!(g.to_string(), "1");
+
+    Ok(())
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn test_serde() -> Result<()> {
+    let a = Semver::parse("1.2.3")?;
+    let b = Semver::parse("1.2.4")?;
+
+    assert_tokens(&a, &[Token::Str("1.2.3")]);
+    assert_tokens(&b, &[Token::Str("1.2.4")]);
+
+    let c = serde_json::from_str::<Semver>("\"your mom\"");
+    assert!(c.is_err());
 
     Ok(())
 }
