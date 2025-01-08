@@ -1,3 +1,5 @@
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 
 pub mod bump;
@@ -65,5 +67,20 @@ impl fmt::Display for Semver {
             )?;
         }
         Ok(())
+    }
+}
+
+#[cfg(feature = "serde")]
+impl Serialize for Semver {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(&self.raw)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> Deserialize<'de> for Semver {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        let s = String::deserialize(deserializer)?;
+        Semver::parse(&s).map_err(serde::de::Error::custom)
     }
 }
