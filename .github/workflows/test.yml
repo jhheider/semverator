@@ -24,11 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
+      - uses: dtolnay/rust-toolchain@nightly
       - name: Cache dependencies
         uses: actions/cache@v4
         env:
@@ -49,19 +45,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
+      - uses: dtolnay/rust-toolchain@nightly
       - name: Setup just
         uses: extractions/setup-just@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - run: cargo install cargo-tarpaulin
       - name: Generate test result and coverage report
-        run: |
-          cargo install cargo-tarpaulin
-          just coverage
+        run: just coverage
       - uses: coverallsapp/github-action@v2
         with:
           path-to-lcov: coverage/lcov.info

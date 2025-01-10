@@ -14,15 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --all-features
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo check --all-features
         env:
           RUSTFLAGS: "-D warnings"
 
@@ -31,31 +24,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: nightly
-          override: true
+      - uses: dtolnay/rust-toolchain@nightly
       - run: rustup component add rustfmt
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+      - run: cargo fmt --all -- --check
 
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@nightly
         with:
-          toolchain: nightly
           components: clippy
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --all-features
+      - run: cargo clippy --all-features
         env:
           RUSTFLAGS: "-D warnings"
 
