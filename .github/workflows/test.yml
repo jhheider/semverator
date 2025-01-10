@@ -57,8 +57,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@nightly
       - name: Setup just
         uses: extractions/setup-just@v2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
       - run: cargo install cargo-tarpaulin
       - name: Generate test result and coverage report
         run: just coverage
