@@ -281,6 +281,41 @@ fn test_display() -> Result<()> {
     Ok(())
 }
 
+#[test]
+fn test_constructors() -> Result<()> {
+    let ra = Range::parse("*")?;
+    let rb = Range::any();
+
+    assert_eq!(ra.raw, rb.raw);
+
+    let rc = Range::parse("=1.2.3")?;
+    let rd = Range::single("1.2.3")?;
+
+    assert_eq!(rc.raw, rd.raw);
+
+    let re = Range::parse(">=1.2.3<2.0.0")?;
+    let rf = Range::contiguous("1.2.3", "2.0.0")?;
+
+    assert_eq!(re.raw, rf.raw);
+
+    let rg = Range::parse("^1.2.3")?;
+    let rh = Range::caret("1.2.3")?;
+
+    assert_eq!(rg.raw, rh.raw);
+
+    let ri = Range::parse("~1.2.3")?;
+    let rj = Range::tilde("1.2.3")?;
+
+    assert_eq!(ri.raw, rj.raw);
+
+    let sa = Semver::parse("1.2.3")?;
+    let rk = Range::from_semver(&sa)?;
+
+    assert_eq!(rd.raw, rk.raw);
+
+    Ok(())
+}
+
 #[cfg(feature = "serde")]
 #[test]
 fn test_serde() -> Result<()> {
