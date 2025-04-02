@@ -31,14 +31,12 @@ impl Semver {
 
         let len = acmps.len().max(bcmps.len());
         for x in 0..len {
-            let a = acmps.get(x);
-            let b = bcmps.get(x);
-            match (a, b) {
-                (None, _) => return Ordering::Less,
-                (_, None) => return Ordering::Greater,
-                (Some(a), Some(b)) if a > b => return Ordering::Greater,
-                (Some(a), Some(b)) if a < b => return Ordering::Less,
-                _ => continue,
+            let a = acmps.get(x).unwrap_or(&0);
+            let b = bcmps.get(x).unwrap_or(&0);
+            match a.cmp(b) {
+                Ordering::Equal => continue,
+                Ordering::Greater => return Ordering::Greater,
+                Ordering::Less => return Ordering::Less,
             }
         }
 
