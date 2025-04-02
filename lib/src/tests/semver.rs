@@ -98,6 +98,11 @@ fn test_compare() -> Result<()> {
     assert!(i.lt(&k)); // 1.2.3-alpha.1+8ec0834 < 1.2.3-alpha.2+7ec0834
     assert!(j.lt(&k)); // 1.2.3-alpha.1+7ec0834 < 1.2.3-alpha.2+7ec0834
 
+    // issue #38
+    let l = Semver::parse("0.2")?;
+    let m = Semver::parse("0.2.0")?;
+    assert!(l.eq(&m)); // 0.2 == 0.2.0
+
     Ok(())
 }
 
