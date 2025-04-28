@@ -48,7 +48,7 @@ impl Range {
     }
 
     pub fn single(v: &str) -> Result<Self> {
-        let raw = format!("={}", v);
+        let raw = format!("={v}");
         let set = vec![Constraint::Single(
             Semver::parse(v).context("invalid version")?,
         )];
@@ -56,7 +56,7 @@ impl Range {
     }
 
     pub fn contiguous(v1: &str, v2: &str) -> Result<Self> {
-        let raw = format!(">={}<{}", v1, v2);
+        let raw = format!(">={v1}<{v2}");
         let set = vec![Constraint::Contiguous(
             Semver::parse(v1).context("invalid version")?,
             Semver::parse(v2).context("invalid version")?,
@@ -65,13 +65,13 @@ impl Range {
     }
 
     pub fn caret(v: &str) -> Result<Self> {
-        let raw = format!("^{}", v);
+        let raw = format!("^{v}");
         let set = vec![Constraint::parse(&raw)?];
         Ok(Self { raw, set })
     }
 
     pub fn tilde(v: &str) -> Result<Self> {
-        let raw = format!("~{}", v);
+        let raw = format!("~{v}");
         let set = vec![Constraint::parse(&raw)?];
         Ok(Self { raw, set })
     }
