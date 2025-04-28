@@ -49,7 +49,7 @@ impl Semver {
         };
 
         let raw = if SHORT_REGEX.is_match(&raw) {
-            let mut r = format!("{}.{}.{}", major, minor, patch);
+            let mut r = format!("{major}.{minor}.{patch}");
             if !prerelease.is_empty() {
                 r.push_str(&format!("-{}", prerelease.join(".")));
             }
