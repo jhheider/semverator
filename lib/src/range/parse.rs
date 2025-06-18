@@ -10,10 +10,17 @@ lazy_static! {
     static ref CONSTRAINT_REGEX_RANGE: Regex =
         Regex::new(r"^>=((\d+\.)*\d+)\s*(<((\d+\.)*\d+))?$").unwrap();
     static ref CONSTRAINT_REGEX_SIMPLE: Regex = Regex::new(r"^([~=<^@])(.+)$").unwrap();
+    static ref INFINITIES_REGEX: Regex = Regex::new(r"<Infinity(\.Infinity)+").unwrap();
 }
 
 impl Range {
     pub fn parse(range: &str) -> Result<Self> {
+        // Ignore `<Infinity.Infinity.Infinity`. Fixes https://github.com/pkgxdev/pkgx/issues/1190
+        let range = if INFINITIES_REGEX.is_match(range) {
+            &INFINITIES_REGEX.replace(range, "").to_string()
+        } else {
+            range
+        };
         let raw = range.to_string();
         let mut set = Vec::new();
 
@@ -148,9 +155,9 @@ impl Constraint {
                 "=" => Ok(Constraint::Single(Semver::parse(
                     cap.get(2).context("invalid description")?.as_str(),
                 )?)),
-                _ => unreachable!("invalid range description"),
+                _ => unreachable!("invalid range description: {}", constraint),
             };
         }
-        bail!("invalid range description")
+        bail!("invalid range description: {}", constraint)
     }
 }

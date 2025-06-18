@@ -1,6 +1,6 @@
 [package]
 name = "semverator"
-version = "0.10.0"
+version = "0.10.1"
 edition = "2021"
 license = "Apache-2.0"
 readme = "../README.md"
@@ -13,7 +13,7 @@ categories = ["command-line-utilities"]
 [dependencies]
 anyhow = "1.0.98"
 clap = { version = '4.5.40', features = ['cargo'] }
-libsemverator = { path = "../lib", version = "0.10.0" }
+libsemverator = { path = "../lib", version = "0.10.1" }
 
 [lints.rust]
 unexpected_cfgs = { level = "allow", check-cfg = ['cfg(tarpaulin_include)'] }
