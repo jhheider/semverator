@@ -210,6 +210,18 @@ fn test_intersect() -> Result<()> {
     assert!(il.is_ok());
     assert_eq!(il?.raw, rg.raw);
 
+    // This is the test for https://github.com/pkgxdev/pkgx/issues/1190
+    let rn = Range::any();
+    let ro = Range::parse(">=5.0.0<Infinity.Infinity.Infinity")?;
+
+    let im = rn.intersect(&ro);
+    assert!(im.is_ok());
+    assert_eq!(im?.raw, ro.raw);
+
+    let r#in = ro.intersect(&rn);
+    assert!(r#in.is_ok());
+    assert_eq!(r#in?.raw, ro.raw);
+
     Ok(())
 }
 
@@ -277,6 +289,10 @@ fn test_display() -> Result<()> {
     assert_eq!(rh.to_string(), "~0.1.1");
     assert_eq!(ri.to_string(), ">=0.1.1");
     assert_eq!(rj.to_string(), ">=0.1.1<3");
+
+    // This is the test for https://github.com/pkgxdev/pkgx/issues/1190
+    let rk = Range::parse(">=5.0.0<Infinity.Infinity.Infinity")?;
+    assert_eq!(rk.to_string(), ">=5");
 
     Ok(())
 }
