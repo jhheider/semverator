@@ -19,7 +19,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 anyhow = "1.0.99"
 lazy_static = "1.5.0"
-regex = "1.11.1"
+regex = "1.11.2"
 serde = { version = "1.0.219", optional = true }
 serde_json = { version = "1.0.142", optional = true }
 
