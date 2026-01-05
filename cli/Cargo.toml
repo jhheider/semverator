@@ -12,7 +12,7 @@ categories = ["command-line-utilities"]
 
 [dependencies]
 anyhow = "1.0.100"
-clap = { version = '4.5.53', features = ['cargo'] }
+clap = { version = '4.5.54', features = ['cargo'] }
 libsemverator = { path = "../lib", version = "0.10.1" }
 
 [lints.rust]
