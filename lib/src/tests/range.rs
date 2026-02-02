@@ -332,6 +332,25 @@ fn test_constructors() -> Result<()> {
     Ok(())
 }
 
+#[test]
+fn intersect_any_with_gte_range() {
+    // ">=5" parses to Contiguous(5.0.0, Infinity.Infinity.Infinity)
+    // First intersection: ">=5" ∩ ">=5" produces a range whose .raw is ">=5.0.0<Infinity.Infinity.Infinity"
+    // Second intersection with "*" tries to Range::parse that .raw string and fails
+    let a = Range::parse(">=5").unwrap();
+    let b = Range::parse(">=5").unwrap();
+    let intersection = a.intersect(&b).unwrap();
+
+    let any = Range::parse("*").unwrap();
+    // This fails with "invalid range description"
+    let result = intersection.intersect(&any);
+    assert!(
+        result.is_ok(),
+        "intersect with Any failed: {:?}",
+        result.err()
+    );
+}
+
 #[cfg(feature = "serde")]
 #[test]
 fn test_serde() -> Result<()> {
