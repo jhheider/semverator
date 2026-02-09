@@ -11,7 +11,7 @@ keywords = ["semver", "semantic", "versioning", "pkgx"]
 categories = ["command-line-utilities"]
 
 [dependencies]
-anyhow = "1.0.100"
+anyhow = "1.0.101"
 clap = { version = '4.5.56', features = ['cargo'] }
 libsemverator = { path = "../lib", version = "0.10.1" }
 
