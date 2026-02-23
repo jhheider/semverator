@@ -14,12 +14,12 @@ jobs:
       RUSTFLAGS: "-D warnings"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
       - name: Release Build
         run: cargo build -p semverator --release
       - name: "Upload Artifact"
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME_UNDERSCORE }}
           path: target/release/${{ env.PROJECT_NAME_UNDERSCORE }}
@@ -28,7 +28,7 @@ jobs:
     name: Publish to crates.io
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@nightly
       - uses: katyo/publish-crates@v2
         with:
