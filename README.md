@@ -10,8 +10,12 @@ for command-line usage.
 
 ## Install
 
-`cargo install semverator` or, for [pkgx](https://pkgx.dev) users,
-`pkgx +crates.io/semverator`.
+`semverator` is available four ways:
+
+- **Homebrew:** `brew install jhheider/tap/semverator`
+- **Cargo:** `cargo install semverator`
+- **pkgx:** `pkgx +crates.io/semverator`
+- **Source:** `cargo install --path cli`
 
 ## Usage
 
