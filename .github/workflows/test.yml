@@ -1,15 +1,22 @@
 # https://github.com/BamPeers/rust-ci-github-actions-workflow
 
+name: Test with Code Coverage
+
 on:
   pull_request:
+    paths-ignore: ["**.md", "LICENSE*", ".gitignore", ".markdownlint.yml"]
   push:
     branches:
       - main
+    paths-ignore: ["**.md", "LICENSE*", ".gitignore", ".markdownlint.yml"]
 
-name: Test with Code Coverage
-
+# Cancel a superseded in-progress run when a new commit lands on the same ref
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
 
 permissions:
   contents: read
@@ -25,39 +32,33 @@ jobs:
           - macos-latest
           - windows-latest
     name: Test (${{ matrix.os }})
-    env:
-      PROJECT_NAME_UNDERSCORE: semverator
-      CARGO_INCREMENTAL: 0
-      RUSTFLAGS: -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort -D warnings
-      RUSTDOCFLAGS: -Cpanic=abort
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@nightly
-      - name: Cache dependencies
-        uses: actions/cache@v6
-        env:
-          cache-name: cache-dependencies
+      - uses: Swatinem/rust-cache@v2
         with:
-          path: |
-            ~/.cargo/.crates.toml
-            ~/.cargo/.crates2.json
-            ~/.cargo/bin
-            ~/.cargo/registry/index
-            ~/.cargo/registry/cache
-            target
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Cargo.lock') }}
+          key: ${{ matrix.os }}
       - name: Test
-        run: cargo test --all-features
+        run: cargo test --workspace --all-features
+
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@nightly
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: coverage
       - name: Setup just
         uses: extractions/setup-just@v4
-      - run: cargo install cargo-tarpaulin
+      # Prebuilt binary instead of `cargo install cargo-tarpaulin`, which
+      # compiles the tool from source on every run.
+      - name: Install cargo-tarpaulin
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-tarpaulin
       - name: Generate test result and coverage report
         run: just coverage
       - uses: coverallsapp/github-action@v2

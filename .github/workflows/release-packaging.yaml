@@ -1,35 +1,92 @@
 # https://github.com/BamPeers/rust-ci-github-actions-workflow
 
+name: Release Packaging
+
+# Fires when a GitHub Release is published (the version must already be
+# committed in Cargo.toml). Builds the platform binaries, attaches them to the
+# release, and publishes the workspace crates to crates.io.
 on:
   release:
     types: [published]
 
-name: Release Packaging
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  release:
-    name: Release Packaging
-    env:
-      PROJECT_NAME_UNDERSCORE: semverator
-      RUSTFLAGS: "-D warnings"
-    runs-on: ubuntu-latest
+  build:
+    name: Build (${{ matrix.asset_name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            asset_name: semverator-linux-x86_64.tar.gz
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            asset_name: semverator-linux-aarch64.tar.gz
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            asset_name: semverator-macos-x86_64.tar.gz
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            asset_name: semverator-macos-aarch64.tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            asset_name: semverator-windows-x86_64.zip
     steps:
       - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@nightly
-      - name: Release Build
-        run: cargo build -p semverator --release
-      - name: "Upload Artifact"
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ env.PROJECT_NAME_UNDERSCORE }}
-          path: target/release/${{ env.PROJECT_NAME_UNDERSCORE }}
 
-  publish:
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      # Cross linker for the non-native linux-aarch64 build
+      - uses: taiki-e/setup-cross-toolchain-action@v1
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        with:
+          target: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Build
+        run: cargo build --release -p semverator --target ${{ matrix.target }}
+
+      - name: Package
+        shell: bash
+        run: |
+          cd target/${{ matrix.target }}/release
+          if [[ "${{ matrix.asset_name }}" == *.zip ]]; then
+            7z a "$GITHUB_WORKSPACE/${{ matrix.asset_name }}" semverator.exe
+          else
+            tar czf "$GITHUB_WORKSPACE/${{ matrix.asset_name }}" semverator
+          fi
+
+      - name: Attach to release
+        shell: bash
+        run: gh release upload '${{ github.event.release.tag_name }}' '${{ matrix.asset_name }}' --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  publish-crates:
     name: Publish to crates.io
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: dtolnay/rust-toolchain@nightly
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      # Publishes workspace crates in dependency order (libsemverator, then
+      # semverator), waiting for the index between them.
       - uses: katyo/publish-crates@v2
         with:
           registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
