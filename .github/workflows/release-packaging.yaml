@@ -8,9 +8,17 @@ name: Release Packaging
 on:
   release:
     types: [published]
+  # Manual trigger to (re)build and attach binaries to an existing release,
+  # e.g. one cut before this workflow published binaries. Builds from the tag's
+  # own code; the crates publish is skipped (dispatch is binaries-only).
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to build and attach binaries to (e.g. v0.10.1)"
+        required: true
 
 concurrency:
-  group: release-${{ github.event.release.tag_name }}
+  group: release-${{ github.event.release.tag_name || inputs.tag }}
 
 permissions:
   contents: write
@@ -41,7 +49,11 @@ jobs:
             target: x86_64-pc-windows-msvc
             asset_name: semverator-windows-x86_64.zip
     steps:
+      # Build the tag's own code (on dispatch), so attached binaries match the
+      # released source; on a real release event this resolves to the tag too.
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -72,13 +84,15 @@ jobs:
 
       - name: Attach to release
         shell: bash
-        run: gh release upload '${{ github.event.release.tag_name }}' '${{ matrix.asset_name }}' --clobber
+        run: gh release upload '${{ github.event.release.tag_name || inputs.tag }}' '${{ matrix.asset_name }}' --clobber
         env:
           GH_TOKEN: ${{ github.token }}
 
   publish-crates:
     name: Publish to crates.io
     needs: build
+    # Only on a real release; a manual dispatch is for binaries, not re-publish.
+    if: ${{ github.event_name == 'release' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
