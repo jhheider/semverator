@@ -1,0 +1,32 @@
+name: Release
+
+# Publish a release with `gh release create vX.Y.Z --generate-notes` (versions
+# already committed). Builds multi-platform binaries, attaches them, and
+# publishes the crates. workflow_dispatch rebuilds an existing release's
+# binaries without re-publishing crates.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing release tag to rebuild binaries for (e.g. v0.10.1)"
+        required: true
+
+jobs:
+  release:
+    uses: jhheider/rust-ci/.github/workflows/release.yml@v1
+    with:
+      bin-name: semverator
+      tag: ${{ github.event.inputs.tag }}
+      publish-crates: true
+      crates: "libsemverator semverator"
+      targets: |
+        [
+          {"os":"ubuntu-latest","target":"x86_64-unknown-linux-gnu","asset":"semverator-linux-x86_64.tar.gz"},
+          {"os":"ubuntu-latest","target":"aarch64-unknown-linux-gnu","asset":"semverator-linux-aarch64.tar.gz"},
+          {"os":"macos-latest","target":"x86_64-apple-darwin","asset":"semverator-macos-x86_64.tar.gz"},
+          {"os":"macos-latest","target":"aarch64-apple-darwin","asset":"semverator-macos-aarch64.tar.gz"},
+          {"os":"windows-latest","target":"x86_64-pc-windows-msvc","asset":"semverator-windows-x86_64.zip"}
+        ]
+    secrets: inherit
