@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "LICENSE*", ".gitignore"]
+  pull_request:
+    paths-ignore: ["**.md", "LICENSE*", ".gitignore"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    # Migrated off nightly: stable is the shared default, and semverator builds
+    # and tests clean on it (the nightly pin was a stale relic). Default 3-OS
+    # matrix; coverage via cargo-llvm-cov.
+    uses: jhheider/rust-ci/.github/workflows/ci.yml@v1
+    with:
+      coverage: true
+    secrets: inherit
