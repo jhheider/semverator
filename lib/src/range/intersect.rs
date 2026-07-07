@@ -1,5 +1,5 @@
 use super::{Constraint, Range};
-use anyhow::{bail, Result};
+use crate::error::{Error, Result};
 
 impl Range {
     pub fn intersect(&self, range: &Range) -> Result<Range> {
@@ -39,7 +39,7 @@ impl Range {
             }
         }
         if set.is_empty() {
-            bail!("no intersection possible")
+            return Err(Error::Range("no intersection possible".into()));
         }
         let mut rv = Range {
             raw: "".to_string(),

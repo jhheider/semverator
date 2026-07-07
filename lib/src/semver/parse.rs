@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use crate::error::{Error, Result};
 use lazy_static::lazy_static;
 use regex::Regex;
 
@@ -15,24 +15,36 @@ impl Semver {
     pub fn parse(semver: &str) -> Result<Self> {
         let raw = semver.trim_start_matches('v').to_string();
 
-        let captures = FULL_REGEX.captures(&raw).context("invalid semver")?;
+        let captures = FULL_REGEX
+            .captures(&raw)
+            .ok_or_else(|| Error::Semver("invalid semver".into()))?;
 
         let mut components: Vec<usize> = captures
             .get(1)
-            .context("regex failure")?
+            .ok_or_else(|| Error::Semver("regex failure".into()))?
             .as_str()
             .split('.')
-            .map(|s| s.parse::<usize>().context("invalid digit"))
+            .map(|s| {
+                s.parse::<usize>()
+                    .map_err(|_| Error::Semver("invalid digit".into()))
+            })
             .collect::<Result<Vec<usize>>>()?;
 
         if let Some(letter) = captures.get(2) {
-            let letter = letter.as_str().chars().next().context("not a character")? as usize
+            let letter = letter
+                .as_str()
+                .chars()
+                .next()
+                .ok_or_else(|| Error::Semver("not a character".into()))?
+                as usize
                 - 'a' as usize
                 + 1;
             components.push(letter);
         }
 
-        let major = *components.first().context("string is too short")?;
+        let major = *components
+            .first()
+            .ok_or_else(|| Error::Semver("string is too short".into()))?;
         let minor = *components.get(1).unwrap_or(&0);
         let patch = *components.get(2).unwrap_or(&0);
 

@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use crate::error::{Error, Result};
 
 use super::Semver;
 
@@ -27,7 +27,7 @@ impl SemverComponent {
             "major" => Ok(Self::Major),
             "minor" => Ok(Self::Minor),
             "patch" => Ok(Self::Patch),
-            _ => bail!("invalid bump component '{}'", s),
+            _ => Err(Error::Semver(format!("invalid bump component '{}'", s))),
         }
     }
 }

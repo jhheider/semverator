@@ -1,3 +1,22 @@
 [workspace]
 members = ["cli", "lib"]
 resolver = "2"
+
+# Shared, non-version metadata. Versions are per-crate (see each crate's
+# Cargo.toml) so crates can be released independently.
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/jhheider/semverator"
+homepage = "https://github.com/jhheider/semverator"
+keywords = ["semver", "semantic", "versioning", "pkgx"]
+
+[workspace.dependencies]
+thiserror = "2"
+anyhow = "1.0.102"
+regex = "1.12.3"
+lazy_static = "1.5.0"
+serde = { version = "1.0.228" }
+serde_json = { version = "1.0.150" }
+clap = { version = "4.6.1", features = ["cargo"] }
+serde_test = "1.0.177"

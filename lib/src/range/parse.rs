@@ -1,7 +1,7 @@
 use crate::semver::Semver;
 
 use super::{Constraint, Range};
-use anyhow::{bail, Context, Result};
+use crate::error::{Error, Result};
 use lazy_static::lazy_static;
 use regex::Regex;
 
@@ -25,7 +25,7 @@ impl Range {
         let mut set = Vec::new();
 
         if range.is_empty() {
-            bail!("no constraints")
+            return Err(Error::Range("no constraints".into()));
         }
 
         if range == "*" {
@@ -40,7 +40,10 @@ impl Range {
         for c in set.iter() {
             if let Constraint::Contiguous(v1, v2) = c {
                 if !v1.lt(v2) {
-                    bail!("{} is greater than {}", v1.raw, v2.raw)
+                    return Err(Error::Range(format!(
+                        "{} is greater than {}",
+                        v1.raw, v2.raw
+                    )));
                 }
             }
         }
@@ -56,17 +59,15 @@ impl Range {
 
     pub fn single(v: &str) -> Result<Self> {
         let raw = format!("={v}");
-        let set = vec![Constraint::Single(
-            Semver::parse(v).context("invalid version")?,
-        )];
+        let set = vec![Constraint::Single(Semver::parse(v)?)];
         Ok(Self { raw, set })
     }
 
     pub fn contiguous(v1: &str, v2: &str) -> Result<Self> {
         let raw = format!(">={v1}<{v2}");
         let set = vec![Constraint::Contiguous(
-            Semver::parse(v1).context("invalid version")?,
-            Semver::parse(v2).context("invalid version")?,
+            Semver::parse(v1)?,
+            Semver::parse(v2)?,
         )];
         Ok(Self { raw, set })
     }
@@ -91,9 +92,17 @@ impl Range {
 impl Constraint {
     pub fn parse(constraint: &str) -> Result<Self> {
         if let Some(cap) = CONSTRAINT_REGEX_RANGE.captures(constraint) {
-            let v1 = Semver::parse(cap.get(1).context("invalid description")?.as_str())?;
+            let v1 = Semver::parse(
+                cap.get(1)
+                    .ok_or_else(|| Error::Range("invalid description".into()))?
+                    .as_str(),
+            )?;
             let v2 = if cap.get(3).is_some() {
-                Semver::parse(cap.get(4).context("invalid description")?.as_str())?
+                Semver::parse(
+                    cap.get(4)
+                        .ok_or_else(|| Error::Range("invalid description".into()))?
+                        .as_str(),
+                )?
             } else {
                 Semver::infinty()
             };
@@ -110,9 +119,17 @@ impl Constraint {
         }
 
         if let Some(cap) = CONSTRAINT_REGEX_SIMPLE.captures(constraint) {
-            return match cap.get(1).context("invalid character")?.as_str() {
+            return match cap
+                .get(1)
+                .ok_or_else(|| Error::Range("invalid character".into()))?
+                .as_str()
+            {
                 "^" => {
-                    let v1 = Semver::parse(cap.get(2).context("invalid description")?.as_str())?;
+                    let v1 = Semver::parse(
+                        cap.get(2)
+                            .ok_or_else(|| Error::Range("invalid description".into()))?
+                            .as_str(),
+                    )?;
                     if v1.major > 0 {
                         let v2 = Semver::parse(&format!("{}", v1.major + 1))?;
                         return Ok(Constraint::Contiguous(v1, v2));
@@ -124,7 +141,11 @@ impl Constraint {
                     }
                 }
                 "~" => {
-                    let v1 = Semver::parse(cap.get(2).context("invalid description")?.as_str())?;
+                    let v1 = Semver::parse(
+                        cap.get(2)
+                            .ok_or_else(|| Error::Range("invalid description".into()))?
+                            .as_str(),
+                    )?;
 
                     let v2 = if v1.components.len() == 1 {
                         Semver::parse(&format!("{}", v1.major + 1))?
@@ -135,13 +156,23 @@ impl Constraint {
                 }
                 "<" => {
                     let v1 = Semver::parse("0")?;
-                    let v2 = Semver::parse(cap.get(2).context("invalid description")?.as_str())?;
+                    let v2 = Semver::parse(
+                        cap.get(2)
+                            .ok_or_else(|| Error::Range("invalid description".into()))?
+                            .as_str(),
+                    )?;
                     Ok(Constraint::Contiguous(v1, v2))
                 }
                 "@" => {
-                    let v1 = Semver::parse(cap.get(2).context("invalid description")?.as_str())?;
+                    let v1 = Semver::parse(
+                        cap.get(2)
+                            .ok_or_else(|| Error::Range("invalid description".into()))?
+                            .as_str(),
+                    )?;
                     let mut parts = v1.components.clone();
-                    let last = parts.last_mut().context("version too short")?;
+                    let last = parts
+                        .last_mut()
+                        .ok_or_else(|| Error::Range("version too short".into()))?;
                     *last += 1;
                     let v2 = Semver::parse(
                         &parts
@@ -153,11 +184,16 @@ impl Constraint {
                     Ok(Constraint::Contiguous(v1, v2))
                 }
                 "=" => Ok(Constraint::Single(Semver::parse(
-                    cap.get(2).context("invalid description")?.as_str(),
+                    cap.get(2)
+                        .ok_or_else(|| Error::Range("invalid description".into()))?
+                        .as_str(),
                 )?)),
                 _ => unreachable!("invalid range description: {}", constraint),
             };
         }
-        bail!("invalid range description: {}", constraint)
+        Err(Error::Range(format!(
+            "invalid range description: {}",
+            constraint
+        )))
     }
 }
