@@ -1,9 +1,9 @@
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/jhheider/semverator)
-[![Test with Code Coverage](https://github.com/jhheider/semverator/actions/workflows/test.yml/badge.svg)](https://github.com/jhheider/semverator/actions/workflows/test.yml)
-[![Check and Lint](https://github.com/jhheider/semverator/actions/workflows/check-and-lint.yaml/badge.svg)](https://github.com/jhheider/semverator/actions/workflows/check-and-lint.yaml)
-[![Coverage Status](https://coveralls.io/repos/github/jhheider/semverator/badge.svg?branch=main)](https://coveralls.io/github/jhheider/semverator?branch=main)
-
 # semverator
+
+[![CI](https://github.com/jhheider/semverator/actions/workflows/ci.yml/badge.svg)](https://github.com/jhheider/semverator/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/jhheider/semverator/badge.svg?branch=main)](https://coveralls.io/github/jhheider/semverator?branch=main)
+[![crates.io](https://img.shields.io/crates/v/semverator.svg)](https://crates.io/crates/semverator)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE.md)
 
 Pure rust implementation of [libpkgx:utils/semver.ts](https://github.com/pkgxdev/libpkgx/blob/main/src/utils/semver.ts)
 for command-line usage.
