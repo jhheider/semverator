@@ -1,3 +1,5 @@
+set fallback
+
 # Show all scripts
 default:
   just -l
