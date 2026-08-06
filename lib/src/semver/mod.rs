@@ -4,6 +4,7 @@ use std::fmt;
 
 pub mod bump;
 pub mod compare;
+pub mod diff;
 pub mod parse;
 
 #[derive(Default, Debug, Clone, Eq)]

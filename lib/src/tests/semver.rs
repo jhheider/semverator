@@ -1,7 +1,7 @@
-use crate::semver::{bump::SemverComponent, Semver};
+use crate::semver::{Semver, bump::SemverComponent};
 use anyhow::Result;
 #[cfg(feature = "serde")]
-use serde_test::{assert_tokens, Token};
+use serde_test::{Token, assert_tokens};
 
 #[test]
 fn test_parse() -> Result<()> {
@@ -156,6 +156,43 @@ fn test_bump() -> Result<()> {
     assert_eq!(SemverComponent::from("minor"), SemverComponent::Minor);
     assert_eq!(SemverComponent::from("patch"), SemverComponent::Patch);
     assert_eq!(SemverComponent::from("gibberish"), SemverComponent::None);
+
+    Ok(())
+}
+
+#[test]
+fn test_diff() -> Result<()> {
+    let a = Semver::parse("1.2.4")?;
+    let b = Semver::parse("5.3.2")?;
+    assert_eq!(a.diff(&b), vec![4, 3, 2]);
+    assert_eq!(b.diff(&a), vec![4, 3, 2]);
+
+    let c = Semver::parse("1.2.3")?;
+    let d = Semver::parse("1.2.2")?;
+    assert_eq!(c.diff(&d), vec![0, 0, 1]);
+
+    let e = Semver::parse("1.5.7")?;
+    let f = Semver::parse("2.0.0")?;
+    assert_eq!(e.diff(&f), vec![1, 0, 0]);
+
+    let g = Semver::parse("1.2.3.4.5")?;
+    let h = Semver::parse("1.2.4.0.1")?;
+    assert_eq!(g.diff(&h), vec![0, 0, 1, 0, 1]);
+
+    let i = Semver::parse("1.2.3.4.5")?;
+    let j = Semver::parse("2.0.0")?;
+    assert_eq!(i.diff(&j), vec![1, 0, 0]);
+
+    let m = Semver::parse("1.1.1")?;
+    let n = Semver::parse("2.0.1")?;
+    assert_eq!(m.diff(&n), vec![1, 0, 1]);
+
+    let j = Semver::parse("1.2.3")?;
+    let i = Semver::parse("2.0.0.0.1")?;
+    assert_eq!(i.diff(&j), vec![1, 0, 0, 0, 1]);
+
+    let k = Semver::parse("1.2.3")?;
+    assert_eq!(k.diff(&k), vec![0, 0, 0]);
 
     Ok(())
 }

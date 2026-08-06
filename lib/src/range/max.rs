@@ -7,11 +7,7 @@ impl Range {
         let rv = semvers.iter().filter(|s| self.satisfies(s)).fold(
             Semver::parse("0").unwrap(),
             |max, s| {
-                if max.gt(s) {
-                    max
-                } else {
-                    s.clone()
-                }
+                if max.gt(s) { max } else { s.clone() }
             },
         );
         let zero = Semver::parse("0").unwrap();
