@@ -4,7 +4,7 @@ mod args;
 #[cfg(test)]
 mod tests;
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use args::{get_arg, get_arg_vec};
 use clap::ArgMatches;
 use libsemverator::range::Range;
@@ -91,6 +91,34 @@ fn handle_command(matches: Option<(&str, &ArgMatches)>) -> Result<()> {
             let v_out = v_in.bump(&bump)?;
 
             println!("{}", v_out.raw);
+            Ok(())
+        }
+
+        // Semver::diff
+        Some(("diff", args)) => {
+            let left = get_arg::<Semver>(args, "left")?;
+            let right = get_arg::<Semver>(args, "right")?;
+
+            let diffs = left.diff(&right);
+            for (i, diff) in diffs.iter().enumerate() {
+                let name = match i {
+                    0 => "major".to_string(),
+                    1 => "minor".to_string(),
+                    2 => "patch".to_string(),
+                    i => format!("term.{}", i + 1),
+                };
+                println!("{name}: {diff}");
+            }
+
+            if args.get_flag("enforce") {
+                let positive = diffs.iter().filter(|&&d| d > 0).count();
+                if positive == 1 && diffs.contains(&1) {
+                    println!("Ok: this is a simple bump");
+                } else {
+                    println!("FAIL: this is not a simple bump");
+                    std::process::exit(127);
+                }
+            }
             Ok(())
         }
 

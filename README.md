@@ -33,6 +33,7 @@ Commands:
   neq             checks if two versions are not equal
   gt              checks if left > right
   lt              checks if left < right
+  diff            shows the per-term difference between two versions
   validate-range  validates a range
   satisfies       validates a range satisfies a semver
   max             maximum version that satisifies a range

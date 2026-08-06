@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
-use clap::{arg, command, ArgAction, ArgMatches, Command};
+use clap::{ArgAction, ArgMatches, Command, arg, command};
 use libsemverator::{
     range::Range,
-    semver::{bump::SemverComponent, Semver},
+    semver::{Semver, bump::SemverComponent},
 };
 
 pub fn setup() -> Command {
@@ -52,6 +52,14 @@ pub fn setup() -> Command {
                     arg!([bump] "the bump to apply (major|minor|patch)")
                         .value_parser(SemverComponent::parse),
                 ),
+        )
+        // Semver::diff
+        .subcommand(
+            Command::new("diff")
+                .about("shows the per-term difference between two versions")
+                .arg(arg!([left] "the first version").value_parser(Semver::parse))
+                .arg(arg!([right] "the second version").value_parser(Semver::parse))
+                .arg(arg!(--enforce "fail unless the difference is a simple bump")),
         )
         // Range::validate-range
         .subcommand(

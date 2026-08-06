@@ -38,13 +38,13 @@ impl Range {
             .collect::<Result<Vec<Constraint>>>()?;
 
         for c in set.iter() {
-            if let Constraint::Contiguous(v1, v2) = c {
-                if !v1.lt(v2) {
-                    return Err(Error::Range(format!(
-                        "{} is greater than {}",
-                        v1.raw, v2.raw
-                    )));
-                }
+            if let Constraint::Contiguous(v1, v2) = c
+                && !v1.lt(v2)
+            {
+                return Err(Error::Range(format!(
+                    "{} is greater than {}",
+                    v1.raw, v2.raw
+                )));
             }
         }
         Ok(Self { raw, set })
