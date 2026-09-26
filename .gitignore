@@ -2,3 +2,6 @@
 coverage/
 .idea
 .envrc
+
+# Local Claude Code state (agent worktrees)
+/.claude/worktrees/
