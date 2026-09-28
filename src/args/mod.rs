@@ -3,12 +3,19 @@ use crate::{
     semver::{bump::SemverComponent, Semver},
 };
 use anyhow::{Context, Result};
-use clap::{arg, command, ArgAction, ArgMatches, Command};
+use clap::{arg, command, Arg, ArgAction, ArgMatches, Command};
 
 pub fn setup() -> Command {
     command!()
         .subcommand_required(true)
         .arg_required_else_help(true)
+        .arg(
+            Arg::new("calver")
+                .long("no-special-calver")
+                .short('c')
+                .action(ArgAction::SetTrue)
+                .help("disables special calver ordering"),
+        )
         // Semver::validate
         .subcommand(
             Command::new("validate")

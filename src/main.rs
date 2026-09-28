@@ -16,13 +16,14 @@ use semver::Semver;
 fn main() -> Result<()> {
     let args = args::setup().get_matches();
 
-    handle_command(args.subcommand())
+    let ignore_calver = args.get_one::<bool>("calver").unwrap_or(&false);
+    handle_command(args.subcommand(), *ignore_calver)
 }
 
 // `clap` tested for correctness
 // TODO: factor out as much as possible for testing
 #[cfg(not(tarpaulin_include))]
-fn handle_command(matches: Option<(&str, &ArgMatches)>) -> Result<()> {
+fn handle_command(matches: Option<(&str, &ArgMatches)>, ignore_calver: bool) -> Result<()> {
     use crate::semver::bump::SemverComponent;
 
     match matches {
